@@ -4,6 +4,10 @@ Projet de Fin d'Études (PFE) — Application web fullstack de réservation de p
 **Next.js 15 (App Router) + Supabase + Stripe**
 
 ---
+![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
 
 ## Stack technique
 
