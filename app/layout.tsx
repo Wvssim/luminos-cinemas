@@ -3,6 +3,7 @@
 // C'est ici qu'on charge les polices Google Fonts et qu'on définit la langue du document.
 import type { Metadata } from 'next';
 import './globals.css';
+import ChatBubble from '@/components/ChatBubble';
 
 // Métadonnées par défaut — surchargées page par page via export const metadata
 export const metadata: Metadata = {
@@ -28,7 +29,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       {/* children : contenu rendu par chaque page ou layout imbriqué */}
-      <body>{children}</body>
+      <body>
+        {children}
+        <ChatBubble />
+      </body>
     </html>
   );
 }
