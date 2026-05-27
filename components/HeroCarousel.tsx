@@ -87,7 +87,7 @@ export default function HeroCarousel({ films }: { films: Film[] }) {
             </div>
             <div className="home__heroQuickRow">
               <span>À partir de</span>
-              <strong>12,50 MAD</strong>
+              <strong>35,00 MAD</strong>
             </div>
           </div>
         </div>

@@ -79,7 +79,7 @@ export type Reservation = {
 // SEAT_PRICES : prix par défaut des catégories de sièges en MAD.
 // Surchargeable par séance via les champs price_* de la table screenings.
 export const SEAT_PRICES = {
-  standard: { label: 'Standard', price: 12.5 },
-  premium:  { label: 'Premium',  price: 16.0 },
-  duo:      { label: 'Duo',      price: 32.0 },
+  standard: { label: 'Standard', price: 35.0 },
+  premium:  { label: 'Premium',  price: 55.0 },
+  duo:      { label: 'Duo',      price: 75.0 },
 } as const;

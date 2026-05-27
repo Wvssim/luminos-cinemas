@@ -34,10 +34,10 @@ export default function SeatPicker({
 
   // Construit la table des prix à partir des props ou des valeurs par défaut
   const priceMap: Record<'standard' | 'premium' | 'duo', number> = prices ? {
-    standard: prices.standard ?? 12.5,
-    premium: prices.premium ?? 16.0,
-    duo: prices.duo ?? 32.0,
-  } : { standard: 12.5, premium: 16.0, duo: 32.0 };
+    standard: prices.standard ?? 35.0,
+    premium: prices.premium ?? 55.0,
+    duo: prices.duo ?? 75.0,
+  } : { standard: 35.0, premium: 55.0, duo: 75.0 };
 
   // toggle : ajoute ou retire un siège de la sélection au clic.
   // useCallback : mémoïsé pour éviter de recréer la fonction à chaque render.

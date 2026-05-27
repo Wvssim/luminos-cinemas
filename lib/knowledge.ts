@@ -12,7 +12,7 @@ export const KNOWLEDGE_CHUNKS: Chunk[] = [
     id: 'developpeur',
     title: 'Développeur du site — Wassim Lazim',
     content: `Lumière Cinémas a été entièrement conçu et développé par Wassim Lazim, élève ingénieur en 4ème année filière DSI (Développement des Systèmes d'Information) à l'EMSI (École Marocaine des Sciences de l'Ingénieur), promotion 2025-2026.
-Ce projet a été réalisé dans le cadre de son Projet de Fin d'Année (PFA), sous l'encadrement de Mme Zineb Benyahya.
+Ce projet a été réalisé dans le cadre de son Projet de Fin d'Année (PFA), sous l'encadrement de Mme Naji Zineb.
 Wassim Lazim a assuré l'intégralité du développement fullstack : architecture technique, base de données, authentification, interface utilisateur, tunnel de réservation, intégration paiement et back-office administrateur.
 Stack technique maîtrisée : Next.js 15 (App Router, Server Components, Server Actions), TypeScript, React 19, Supabase (PostgreSQL + Auth + Storage + Row Level Security), Stripe Checkout, CSS design system custom.
 L'hébergement est assuré par Vercel avec un CDN mondial pour des performances optimales, même sur connexion mobile 4G.
@@ -44,9 +44,9 @@ L'état de la réservation est sauvegardé entre les étapes grâce à un cookie
     id: 'sieges-prix',
     title: 'Catégories de sièges et tarifs',
     content: `Il existe 3 catégories de sièges dans chaque salle :
-- Standard : 12,50 MAD par place. Confort classique, disponible dans toutes les rangées.
-- Premium : 16,00 MAD par place. Meilleure visibilité, rangées centrales, plus d'espace.
-- Duo : 32,00 MAD pour 2 places côte à côte. Idéal pour les couples et amis, avec accoudoir central relevable.
+- Standard : 35,00 MAD par place. Confort classique, disponible dans toutes les rangées.
+- Premium : 55,00 MAD par place. Meilleure visibilité, rangées centrales, plus d'espace.
+- Duo : 75,00 MAD pour 2 places côte à côte. Idéal pour les couples et amis, avec accoudoir central relevable.
 Les prix peuvent varier légèrement selon la séance et le format de projection (IMAX, Dolby Atmos).
 Sur le plan de salle, les sièges occupés sont grisés et non sélectionnables.`,
   },

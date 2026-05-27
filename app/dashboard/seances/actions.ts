@@ -14,9 +14,9 @@ function parse(fd: FormData) {
     room: String(fd.get('room') || '').trim(),
     format: String(fd.get('format') || '').trim() || null,
     total_seats: Number(fd.get('total_seats') || 168),
-    price_standard: Number(fd.get('price_standard') || 12.5),
-    price_premium: Number(fd.get('price_premium') || 16),
-    price_duo: Number(fd.get('price_duo') || 32),
+    price_standard: Number(fd.get('price_standard') || 35),
+    price_premium: Number(fd.get('price_premium') || 55),
+    price_duo: Number(fd.get('price_duo') || 75),
   };
 }
 

@@ -41,8 +41,9 @@ export async function signup(formData: FormData) {
 
   if (error) return redirect(`/signup?error=${encodeURIComponent(error.message)}`);
 
+  // Redirige vers /login avec un flag verify=1 pour afficher la bannière de confirmation email
   revalidatePath('/', 'layout');
-  redirect('/');
+  redirect('/login?verify=1');
 }
 
 // logout : déconnecte l'utilisateur (invalide la session Supabase + supprime les cookies).

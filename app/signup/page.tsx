@@ -22,29 +22,48 @@ export default async function SignupPage({
           <h1 className="auth__h">Rejoindre <em>Lumière</em></h1>
           <p className="auth__sub">Créer un compte</p>
 
-          {/* Bannière d'erreur : affichée si l'inscription échoue (email déjà utilisé, etc.) */}
+          {/* Bannière d'erreur Supabase Auth */}
           {sp.error && <div className="auth__err">{sp.error}</div>}
 
-          {/* action={signup} : soumet le formulaire via Server Action */}
+          {/* Info : explication du processus de vérification email */}
+          <div className="auth__info">
+            <span className="auth__info-icon">✉️</span>
+            <div>
+              <strong>Vérification par email requise</strong>
+              <p>Après inscription, un lien de confirmation vous sera envoyé. Vous devrez cliquer dessus avant de pouvoir vous connecter.</p>
+            </div>
+          </div>
+
           <form action={signup} className="form">
             <div className="form__field">
               <label>Nom complet</label>
-              {/* fullName : transmis à Supabase Auth comme métadonnée user_metadata.full_name */}
-              <input name="fullName" required />
+              <input name="fullName" required placeholder="Prénom Nom" autoComplete="name" />
             </div>
             <div className="form__field">
               <label>Email</label>
-              <input type="email" name="email" required />
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="exemple@domaine.com"
+                autoComplete="email"
+              />
+              <span className="form__hint">Format valide requis — ex : wassim@gmail.com</span>
             </div>
             <div className="form__field">
               <label>Mot de passe</label>
-              {/* minLength=6 : contrainte Supabase Auth par défaut */}
-              <input type="password" name="password" required minLength={6} />
+              <input
+                type="password"
+                name="password"
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
+              <span className="form__hint">6 caractères minimum</span>
             </div>
             <button type="submit" className="btn btn--primary" style={{ marginTop: 8 }}>Créer mon compte →</button>
           </form>
 
-          {/* Lien vers la page de connexion pour les utilisateurs déjà inscrits */}
           <p className="auth__alt">
             Déjà inscrit ? <Link href="/login">Se connecter</Link>
           </p>

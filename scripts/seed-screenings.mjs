@@ -27,9 +27,9 @@ const F = {
 };
 
 // ─── Configs salles ───────────────────────────────────────────────────────────
-const S1 = { room: 'Salle 1 · Dolby Atmos',    format: 'VOSTFR · 4K HDR', seats: 168, ps: 12.50, pp: 16.00, pd: 32.00 };
-const S2 = { room: 'Salle 2 · IMAX',            format: 'VOSTFR · IMAX',   seats: 220, ps: 16.00, pp: 20.00, pd: 40.00 };
-const S3 = { room: 'Salle 3 · Numérique 2K',   format: 'VOSTFR · 2K',     seats: 144, ps: 10.00, pp: 13.00, pd: 26.00 };
+const S1 = { room: 'Salle 1 · Dolby Atmos',    format: 'VOSTFR · 4K HDR', seats: 168, ps: 35.00, pp: 55.00, pd: 75.00 };
+const S2 = { room: 'Salle 2 · IMAX',            format: 'VOSTFR · IMAX',   seats: 220, ps: 45.00, pp: 65.00, pd: 90.00 };
+const S3 = { room: 'Salle 3 · Numérique 2K',   format: 'VOSTFR · 2K',     seats: 144, ps: 30.00, pp: 45.00, pd: 60.00 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const pick = (arr, n) => arr[n % arr.length];

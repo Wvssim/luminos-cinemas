@@ -7,8 +7,11 @@ import ChatBubble from '@/components/ChatBubble';
 
 // Métadonnées par défaut — surchargées page par page via export const metadata
 export const metadata: Metadata = {
-  title: 'Lumière — Réservez votre séance',
-  description: 'Réservation de places de cinéma',
+  title: 'Lumière Cinémas — Réservez votre séance en ligne',
+  description: 'Plateforme marocaine de réservation de billets de cinéma. Choisissez votre film, sélectionnez votre siège et payez en ligne — votre billet QR code vous attend.',
+  keywords: ['cinéma', 'réservation', 'billet', 'Casablanca', 'Maroc', 'Lumière Cinémas'],
+  authors: [{ name: 'Wassim Lazim' }],
+  icons: { icon: '/logo.png', apple: '/logo.png' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -2,6 +2,7 @@
 // Server Component async : lit la session Supabase côté serveur pour afficher les liens conditionnels
 // (Mon compte / Déconnexion / Dashboard admin) sans exposer la session au client.
 import Link from 'next/link';
+import Image from 'next/image';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function Header({
@@ -27,7 +28,15 @@ export default async function Header({
   return (
     <header className="hd">
       {/* Logo — lien vers l'accueil */}
-      <Link href="/" className="hd__logo" style={{ textDecoration: 'none' }}>
+      <Link href="/" className="hd__logo" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <Image
+          src="/logo.png"
+          alt="Lumière Cinémas"
+          width={34}
+          height={34}
+          style={{ filter: 'invert(1) brightness(1.8)', objectFit: 'contain' }}
+          priority
+        />
         <b>LUMIÈRE</b><span>· cinémas</span>
       </Link>
 
@@ -41,7 +50,7 @@ export default async function Header({
 
       {/* Zone droite : ville + actions utilisateur */}
       <div className="hd__right">
-        <div className="hd__city">Paris · Bastille</div>
+        <div className="hd__city">Casablanca · Maroc</div>
 
         {user ? (
           // Utilisateur connecté : Dashboard (admin uniquement) + Mon compte + Déconnexion

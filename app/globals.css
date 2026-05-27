@@ -1099,6 +1099,32 @@ a { text-decoration: none; color: inherit; }
 .auth__alt { font-size: 13px; color: var(--ink-3); margin-top: 18px; text-align: center; }
 .auth__alt a { color: var(--accent); text-decoration: none; }
 
+/* Bandeau info email verification */
+.auth__info {
+  display: flex; gap: 12px; align-items: flex-start;
+  background: rgba(59,130,246,0.07);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 8px;
+  padding: 13px 14px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.auth__info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.auth__info strong { display: block; color: var(--ink); font-size: 13px; margin-bottom: 3px; }
+.auth__info p { margin: 0; color: var(--ink-3); font-size: 12px; }
+
+/* Hint sous les champs de formulaire */
+.form__hint {
+  display: block;
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-top: 5px;
+  font-family: var(--mono);
+  letter-spacing: 0.03em;
+}
+
 /* ============================================================ DASHBOARD */
 .dash { min-height: 100vh; display: grid; grid-template-columns: 240px 1fr; }
 .dash__side {

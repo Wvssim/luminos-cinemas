@@ -56,10 +56,10 @@ export default function ScreeningForm({
 
       {/* Prix par catégorie de siège en MAD (surcharge des valeurs par défaut de SEAT_PRICES) */}
       <div className="form__row">
-        <div className="form__field"><label>Prix standard</label><input type="number" step="0.5" name="price_standard" defaultValue={screening?.price_standard ?? 12.5} /></div>
-        <div className="form__field"><label>Prix premium</label><input type="number" step="0.5" name="price_premium" defaultValue={screening?.price_premium ?? 16} /></div>
+        <div className="form__field"><label>Prix standard</label><input type="number" step="0.5" name="price_standard" defaultValue={screening?.price_standard ?? 35} /></div>
+        <div className="form__field"><label>Prix premium</label><input type="number" step="0.5" name="price_premium" defaultValue={screening?.price_premium ?? 55} /></div>
       </div>
-      <div className="form__field"><label>Prix duo</label><input type="number" step="0.5" name="price_duo" defaultValue={screening?.price_duo ?? 32} /></div>
+      <div className="form__field"><label>Prix duo</label><input type="number" step="0.5" name="price_duo" defaultValue={screening?.price_duo ?? 75} /></div>
 
       <div className="form__actions">
         <button type="submit" className="btn btn--primary">Enregistrer →</button>

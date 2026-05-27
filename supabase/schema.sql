@@ -40,9 +40,9 @@ create table if not exists public.screenings (
   room text not null,
   format text,
   total_seats int not null default 168,
-  price_standard numeric(6,2) default 12.50,
-  price_premium  numeric(6,2) default 16.00,
-  price_duo      numeric(6,2) default 32.00,
+  price_standard numeric(6,2) default 35.00,
+  price_premium  numeric(6,2) default 55.00,
+  price_duo      numeric(6,2) default 75.00,
   created_at timestamptz default now()
 );
 

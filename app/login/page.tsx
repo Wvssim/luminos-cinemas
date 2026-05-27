@@ -10,7 +10,7 @@ export default async function LoginPage({
 }: {
   // error : message d'erreur Supabase Auth encodé dans l'URL (ex: "Invalid login credentials")
   // next  : URL de redirection après connexion réussie (ex: "/dashboard", "/mes-reservations")
-  searchParams: Promise<{ error?: string; next?: string }>;
+  searchParams: Promise<{ error?: string; next?: string; verify?: string }>;
 }) {
   const sp = await searchParams;
 
@@ -22,25 +22,40 @@ export default async function LoginPage({
           <h1 className="auth__h">Mon <em>compte</em></h1>
           <p className="auth__sub">Connectez-vous à Lumière</p>
 
-          {/* Bannière d'erreur : affichée si Supabase Auth retourne une erreur */}
+          {/* Bannière de vérification email — affichée après une inscription réussie */}
+          {sp.verify === '1' && (
+            <div className="auth__info">
+              <span className="auth__info-icon">✉️</span>
+              <div>
+                <strong>Vérifiez votre boîte mail</strong>
+                <p>Un lien de confirmation vous a été envoyé. Cliquez dessus pour activer votre compte, puis connectez-vous ici.</p>
+              </div>
+            </div>
+          )}
+
+          {/* Bannière d'erreur Supabase Auth */}
           {sp.error && <div className="auth__err">{sp.error}</div>}
 
-          {/* action={login} : soumet le formulaire via Server Action (pas de fetch client) */}
           <form action={login} className="form">
-            {/* Champ caché pour rediriger vers la page d'origine après connexion */}
             <input type="hidden" name="next" value={sp.next || '/'} />
             <div className="form__field">
               <label>Email</label>
-              <input type="email" name="email" required />
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="exemple@domaine.com"
+                autoComplete="email"
+              />
+              <span className="form__hint">Format attendu : exemple@domaine.com</span>
             </div>
             <div className="form__field">
               <label>Mot de passe</label>
-              <input type="password" name="password" required />
+              <input type="password" name="password" required autoComplete="current-password" />
             </div>
             <button type="submit" className="btn btn--primary" style={{ marginTop: 8 }}>Se connecter →</button>
           </form>
 
-          {/* Lien vers la page d'inscription */}
           <p className="auth__alt">
             Pas encore de compte ? <Link href="/signup">Créer un compte</Link>
           </p>
