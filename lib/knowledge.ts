@@ -9,6 +9,17 @@ export type Chunk = {
 
 export const KNOWLEDGE_CHUNKS: Chunk[] = [
   {
+    id: 'developpeur',
+    title: 'Développeur du site — Wassim Lazim',
+    content: `Lumière Cinémas a été entièrement conçu et développé par Wassim Lazim, élève ingénieur en 4ème année filière DSI (Développement des Systèmes d'Information) à l'EMSI (École Marocaine des Sciences de l'Ingénieur), promotion 2025-2026.
+Ce projet a été réalisé dans le cadre de son Projet de Fin d'Année (PFA), sous l'encadrement de Mme Zineb Benyahya.
+Wassim Lazim a assuré l'intégralité du développement fullstack : architecture technique, base de données, authentification, interface utilisateur, tunnel de réservation, intégration paiement et back-office administrateur.
+Stack technique maîtrisée : Next.js 15 (App Router, Server Components, Server Actions), TypeScript, React 19, Supabase (PostgreSQL + Auth + Storage + Row Level Security), Stripe Checkout, CSS design system custom.
+L'hébergement est assuré par Vercel avec un CDN mondial pour des performances optimales, même sur connexion mobile 4G.
+Le site utilise le Server-Side Rendering (SSR) pour des temps de chargement rapides et une excellente indexation SEO.
+Pour toute question technique ou collaboration, Wassim Lazim peut être contacté via son profil GitHub : Wvssim.`,
+  },
+  {
     id: 'presentation',
     title: 'Présentation de Lumière Cinémas',
     content: `Lumière Cinémas est une plateforme marocaine de réservation de billets de cinéma en ligne.
