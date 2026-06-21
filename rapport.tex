@@ -1,0 +1,2099 @@
+%%  RAPPORT TECHNIQUE COMPLET — Lumiere Cinemas
+%%  Application Web de Réservation de Cinéma
+%%  Auteurs : Wassim Lazim, Marwan Saadouni, Kamal Chaafie
+%%  Encadrante : NAJI Zineb
+%%  IMPORTANT: Sur Overleaf, changer le compilateur à XeLaTeX pour un rendu correct du texte arabe
+%%  Menu Overleaf > Menu (en haut à gauche) > Compiler > Changer en XeLaTeX
+%% ============================================================
+\documentclass[12pt,a4paper,openany]{report}
+
+%% ── Packages ─────────────────────────────────────────────────
+%% XeLaTeX : inputenc et fontenc sont gérés automatiquement, inutile de les charger
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm, headheight=14.2pt}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{needspace}
+\usepackage{emptypage}
+\usepackage{xparse}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,shapes.multipart}
+\usepackage{colortbl}
+\usepackage{amssymb}
+
+%% Espacement paragraphes : indentation classique, pas de saut vertical
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+\frenchspacing
+
+%% Titres alignés à gauche (évite les espaces étirés entre les mots)
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\raggedright}
+  {\chaptertitlename\ \thechapter}{16pt}{\Huge\raggedright}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\raggedright}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\raggedright}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\raggedright}
+  {\thesubsubsection}{1em}{}
+
+%% ── Style code TypeScript ────────────────────────────────────
+\definecolor{codebg}{HTML}{1E1E2E}
+\definecolor{codecomment}{HTML}{6272A4}
+\definecolor{codekw}{HTML}{FF79C6}
+\definecolor{codestring}{HTML}{F1FA8C}
+\definecolor{codenum}{HTML}{BD93F9}
+
+\lstdefinelanguage{TypeScript}{
+  keywords={const, let, var, function, async, await, return, export, default,
+            import, from, interface, type, class, extends, implements, new,
+            if, else, for, while, try, catch, throw, null, undefined, true, false,
+            use, server, client, redirect, notFound},
+  keywordstyle=\color{codekw}\bfseries,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{codecomment}\itshape,
+  stringstyle=\color{codestring},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]`,
+  sensitive=true
+}
+
+\lstset{
+  language=TypeScript,
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize\color{white},
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{gray},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  tabsize=2,
+  showstringspaces=false
+}
+
+%% ── En-têtes ─────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Lumiere Cinemas}
+\lhead{\small \rightmark}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+
+%% ── Couleurs boîtes ──────────────────────────────────────────
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{infobox}[1][]{
+  colback=blue!5, colframe=blue!40, title=#1,
+  fonttitle=\bfseries, breakable
+}
+\newtcolorbox{warningbox}[1][]{
+  colback=orange!5, colframe=orange!60, title=#1,
+  fonttitle=\bfseries
+}
+
+%% ============================================================
+\begin{document}
+
+%% ── Page de titre ────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+
+  \includegraphics[width=0.28\textwidth]{logo.png}\\[1.5cm]
+
+  {\Huge\bfseries\textcolor{blue}{Lumière Cinémas}}\\[0.6cm]
+  {\Large Application Web de Réservation de Cinéma}\\[0.3cm]
+  {\large Rapport Technique Complet}\\[1.5cm]
+
+  {\large\textbf{Spécifications Techniques}}\\[1.2cm]
+  \begin{tabular}{rl}
+    \toprule
+    \textbf{Plateforme}      & Web — Next.js 15 (App Router) \\
+    \textbf{Langage}         & TypeScript + React 19 \\
+    \textbf{Base de données} & Supabase (PostgreSQL) \\
+    \textbf{Paiement}        & Stripe Checkout \\
+     
+    
+    \textbf{Date}            & \today \\
+    \bottomrule
+  \end{tabular}
+
+  \vfill
+
+  {\large\textbf{Informations Académiques}}\\[1.2cm]
+  \begin{tabular}{rl}
+    \toprule
+    \textbf{Étudiants}    & Wassim Lazim \\
+                          & Marwan Saadouni \\
+                          & Kamal Chaafie \\
+    \textbf{Filière}      & DSI — Développement des Systèmes Informatique \\
+    \textbf{Niveau}       & 4\textsuperscript{ème} année \\
+    \textbf{Encadrante}   & Mme NAJI Zineb \\
+    \textbf{Membres du jury} & Mme NAJI Zineb (encadrante) \\
+                          & Mme BENYAHYA Zineb \\
+                          & Mme BOUSMAR Khadija \\
+    \textbf{Type}         & Projet de Fin d'Année (PFA) \\
+    \textbf{Établissement}& École Marocaine des Sciences de l'Ingénieur \\
+    \textbf{Année univ.}  & 2025--2026 \\
+    \bottomrule
+  \end{tabular}
+
+  \vfill
+  \vspace{0.6cm}
+
+   
+\end{titlepage}
+
+%% ── Page Bismillah ──────────────────────────────────────────
+\newpage
+\thispagestyle{empty}
+\centering
+\vspace*{4cm}
+\includegraphics[width=0.7\textwidth]{bismi.png}
+\vfill
+
+%% ── Dédicaces ───────────────────────────────────────────────
+\newpage
+\chapter*{Dédicaces}
+\thispagestyle{empty}
+\vspace*{3cm}
+\begin{flushright}
+  \itshape\Large
+  À nos familles qui nous ont soutenus tout au long de ce parcours,\\[0.5cm]
+  À nos amis qui ont cru en ce projet,\\[0.5cm]
+  À notre encadrante Mme NAJI Zineb pour ses conseils précieux et son accompagnement,\\[0.5cm]
+  À tous ceux qui ont contribué de près ou de loin à la réussite de cette application.\\[0.5cm]
+  \vspace{1cm}
+  Wassim Lazim, Marwan Saadouni \& Kamal Chaafie
+\end{flushright}
+
+%% ── Remerciements ───────────────────────────────────────────
+\newpage
+\chapter*{Remerciements}
+
+Nous tenons à exprimer nos plus sincères remerciements à :
+
+\begin{itemize}[leftmargin=2em]
+  \item \textbf{Mme NAJI Zineb}, notre encadrante, pour son orientation précieuse, ses conseils avisés et sa disponibilité constante tout au long de ce projet de fin d'année.
+
+  \item \textbf{Les membres du jury} : Mme NAJI Zineb, Mme BENYAHYA Zineb et Mme BOUSMAR Khadija, pour le temps consacré à l'évaluation de ce rapport et de l'application.
+
+  \item \textbf{L'ensemble du corps enseignant} de l'École Marocaine des Sciences de l'Ingénieur pour la qualité de la formation dispensée et les connaissances transmises tout au long de ces années.
+
+  \item \textbf{Nos familles et nos proches} pour leur soutien moral indéfectible et leurs encouragements continus tout au long de cette formation.
+
+  \item \textbf{Nos camarades de promotion} pour l'entraide, les échanges et la bonne ambiance qui ont rendu ce parcours enrichissant.
+\end{itemize}
+
+%% ── Page blanche ─────────────────────────────────────────────
+\newpage
+\thispagestyle{empty}
+\mbox{}
+
+%% ── Résumé ───────────────────────────────────────────────────
+\newpage
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+
+\noindent\textbf{Lumière Cinémas} est une application web complète de réservation de cinéma développée avec Next.js 15 (App Router) et React 19. Elle permet aux utilisateurs de parcourir un catalogue de films, de consulter les séances disponibles, de sélectionner leurs places sur un plan interactif de salle, d'ajouter des snacks, et de procéder au paiement en ligne via Stripe.
+
+L'application intègre :
+\begin{itemize}
+  \item Un back-end cloud \textbf{Supabase} (PostgreSQL + Auth) pour l'authentification, la gestion des données et la Row-Level Security
+  \item Un rendu \textbf{Server-Side Rendering} (SSR) avec React Server Components et Server Actions Next.js pour la sécurité des opérations critiques
+  \item Un tunnel de paiement sécurisé via \textbf{Stripe Checkout}, la réservation étant écrite en base par la page de retour \texttt{/pay/success} qui vérifie le statut du paiement directement auprès de l'API Stripe (\texttt{payment\_status === 'paid'})
+  \item Un composant \textbf{SeatPicker} interactif calculant les disponibilités en temps réel depuis Supabase, prévenant toute double-réservation
+  \item Un stepper de navigation en 6 étapes : Films $\rightarrow$ Séance $\rightarrow$ Places $\rightarrow$ Snacks $\rightarrow$ Paiement $\rightarrow$ Billet
+  \item Un \textbf{Dashboard administrateur} complet protégé par middleware Next.js et RLS Supabase (gestion CRUD films, séances, snacks, réservations, utilisateurs)
+  \item Un état de réservation intermédiaire (\textit{Draft}) persisté en cookie HTTP pour traverser le tunnel sans perte de données
+\end{itemize}
+
+Ce rapport détaille l'architecture SSR + Server Actions, les choix techniques fondamentaux, le modèle de données Supabase, les fonctionnalités principales, l'implémentation technique complète avec extraits de code réels, les diagrammes UML, et les perspectives d'évolution du projet.
+
+\bigskip
+\noindent\textbf{Mots-clés :} Application Web, Next.js 15, React 19, TypeScript, Supabase, PostgreSQL, Stripe, SSR, Server Actions, Réservation, Cinéma, SeatPicker
+
+%% ── Tables ───────────────────────────────────────────────────
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+
+%% ── Abréviations ─────────────────────────────────────────────
+\newpage
+\chapter*{Liste des Abréviations}
+\addcontentsline{toc}{chapter}{Liste des Abréviations}
+
+\begin{longtable}{lp{10cm}}
+  \toprule
+  \textbf{Abréviation} & \textbf{Signification} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  API            & Application Programming Interface \\
+  App Router     & Système de routage basé sur le système de fichiers (Next.js 13+) \\
+  Auth           & Authentication (Authentification) \\
+  CRUD           & Create, Read, Update, Delete \\
+  CSS            & Cascading Style Sheets \\
+  Draft          & Brouillon de réservation, persisté en cookie HTTP \\
+  ENV            & Environment Variables (Variables d'environnement) \\
+  HTTP/HTTPS     & HyperText Transfer Protocol / Secure \\
+  IDE            & Integrated Development Environment \\
+  JSON           & JavaScript Object Notation \\
+  JWT            & JSON Web Token \\
+  MAD            & Dirham marocain (devise de paiement) \\
+  Middleware     & Couche d'interception des requêtes Next.js \\
+  ORM            & Object-Relational Mapping \\
+  PostgreSQL     & Système de gestion de base de données relationnelle open-source \\
+  REST           & Representational State Transfer \\
+  RLS            & Row Level Security (politique d'accès par ligne Supabase) \\
+  RSC            & React Server Components \\
+  SDK            & Software Development Kit \\
+  SSR            & Server-Side Rendering \\
+  Supabase       & Backend-as-a-Service Open Source (PostgreSQL + Auth + Realtime) \\
+  TypeScript     & Sur-ensemble typé de JavaScript développé par Microsoft \\
+  UI             & User Interface \\
+  URL            & Uniform Resource Locator \\
+  UUID           & Universally Unique Identifier \\
+\end{longtable}
+
+%% ============================================================
+%% CONTENU PRINCIPAL
+%% ============================================================
+\newpage
+
+%% ── CHAPITRE 1 ───────────────────────────────────────────────
+\chapter{Introduction et Contexte Général du Projet}
+
+\section{Présentation du domaine}
+
+L'industrie cinématographique s'est profondément numérisée au cours de la dernière décennie. La réservation en ligne est désormais un standard incontournable pour tout complexe cinématographique, exigeant des plateformes web modernes, réactives et sécurisées couvrant l'intégralité du parcours client : découverte du catalogue, sélection de la séance, choix des places, et paiement.
+
+Au Maroc, ce secteur connaît une forte croissance avec l'ouverture de nouveaux multiplexes, rendant la nécessité d'une solution digitale performante encore plus pressante.
+
+\section{Présentation du projet}
+
+Lumière Cinémas est une application web full-stack de réservation de cinéma construite avec Next.js 15 et son App Router. Elle offre :
+
+\begin{itemize}
+  \item Une \textbf{vitrine publique} : catalogue de films en carousel, fiches détaillées avec bande-annonce YouTube intégrée, liste des séances avec disponibilités en temps réel
+  \item Un \textbf{tunnel de réservation} en 6 étapes guidées (stepper) : Films $\rightarrow$ Séance $\rightarrow$ Places $\rightarrow$ Snacks $\rightarrow$ Paiement $\rightarrow$ Billet
+  \item Un \textbf{espace personnel} : inscription, connexion, historique des réservations
+  \item Un \textbf{back-office administrateur} complet pour la gestion du cinéma
+\end{itemize}
+
+\section{Motivation et Objectifs}
+
+Le projet répond à plusieurs objectifs pédagogiques et techniques :
+
+\begin{itemize}
+  \item Maîtriser les technologies web modernes de pointe (Next.js 15 App Router, React 19, TypeScript)
+  \item Implémenter une architecture SSR sécurisée avec Server Actions (zéro exposition des clés côté client)
+  \item Intégrer des services tiers de production (Supabase Auth, Stripe Checkout)
+  \item Concevoir un composant interactif complexe (plan de salle 2D avec catégories de sièges)
+  \item Gérer un état de session multi-pages sans framework de state management externe
+  \item Produire une interface utilisateur soignée avec une identité visuelle cohérente
+\end{itemize}
+
+\section{Problématique}
+
+L'enjeu central était de concevoir une plateforme unifiée gérant simultanément la vitrine client et le back-office administrateur, avec une sécurité totale sur les opérations sensibles (paiement, gestion des réservations), sans exposer les clés d'API côté navigateur, et en garantissant la cohérence des données face aux réservations concurrentes (deux utilisateurs sur les mêmes sièges).
+
+%% ── CHAPITRE 2 — PLANIFICATION ───────────────────────────────
+\chapter{Planification du Projet}
+
+\section{Cycle de Vie du Projet}
+
+Le projet Lumière Cinémas s'appuie sur un cycle de vie \textbf{itératif et incrémental}, organisé en cinq phases successives et interdépendantes. Contrairement au modèle en cascade classique, ce cycle autorise des retours entre phases afin d'intégrer les ajustements au fur et à mesure du développement.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{p{0.5cm}p{2.8cm}p{5.5cm}p{3.5cm}}
+\toprule
+\textbf{N°} & \textbf{Phase} & \textbf{Activités principales} & \textbf{Livrables} \\
+\midrule
+1 & Analyse des besoins & Identification des acteurs, recueil des besoins fonctionnels et non-fonctionnels, définition des cas d'usage & Cahier des charges, diagramme de cas d'usage \\
+\midrule
+2 & Conception & Architecture technique, modélisation UML (classes, séquences, activité), conception du schéma de données Supabase & Diagrammes UML, schéma BDD \\
+\midrule
+3 & Développement & Implémentation incrémentale : authentification, vitrine publique, tunnel de réservation, intégration Stripe, dashboard admin & Code source TypeScript, modules fonctionnels \\
+\midrule
+4 & Tests \& Validation & Vérification fonctionnelle de chaque module, tests de sécurité (accès admin, protection des clés API, cohérence des réservations) & Tableau de tests, corrections \\
+\midrule
+5 & Déploiement & Mise en production sur Vercel, configuration des variables d'environnement, documentation technique finale & Application déployée, rapport \\
+\bottomrule
+\end{tabular}
+\caption{Cycle de vie du projet Lumière Cinémas}
+\label{tab:cycle_vie}
+\end{table}
+
+Chaque phase produit des livrables concrets qui alimentent la phase suivante. La phase de développement est découpée en itérations correspondant aux modules fonctionnels (Chapitre~\ref{chap:impl}), ce qui permet de valider chaque fonctionnalité indépendamment avant d'intégrer la suivante.
+
+\section{Méthodologie de Développement}
+
+Le projet Lumière Cinémas a été réalisé selon une approche \textbf{itérative et incrémentale}, inspirée des principes agiles. Cette méthodologie a permis d'identifier rapidement les risques techniques, de valider les choix architecturaux, et de livrer des fonctionnalités opérationnelles à chaque itération.
+
+Le développement s'est articulé autour de cinq grandes phases successives :
+
+\begin{enumerate}[leftmargin=2em]
+  \item \textbf{Analyse} : Recueil des besoins fonctionnels et non-fonctionnels, étude des technologies, définition des acteurs et des cas d'usage.
+  \item \textbf{Conception} : Modélisation UML (cas d'usage, classes, séquences, activité), architecture Next.js, conception du schéma de données Supabase.
+  \item \textbf{Développement} : Implémentation incrémentale — authentification, vitrine publique, tunnel de réservation, intégration Stripe, dashboard administrateur.
+  \item \textbf{Tests \& Validation} : Vérification fonctionnelle de chaque module, tests de sécurité (protection des clés API, contrôle d'accès admin, cohérence des réservations concurrentes).
+  \item \textbf{Finalisation} : Revue du code, rédaction du rapport technique, préparation de la soutenance.
+\end{enumerate}
+
+\section{Découpage en Phases et Jalons}
+
+Le tableau suivant détaille le découpage chronologique du projet sur la période du \textbf{1\textsuperscript{er} mai 2026 au 10 juin 2026} (six semaines), avec la répartition des responsabilités entre les trois membres de l'équipe : \textbf{Wassim Lazim}, \textbf{Marwan Saadouni} et \textbf{Kamal Chaafie}.
+
+\begin{longtable}{p{0.8cm}p{6.2cm}p{1.2cm}p{1.2cm}p{3.6cm}}
+  \toprule
+  \textbf{Phase} & \textbf{Tâches principales} & \textbf{Début} & \textbf{Fin} & \textbf{Responsable(s)} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  P1  & Analyse des besoins, identification des acteurs, étude technique & 01/05 & 07/05 & Kamal Chaafie \\
+  P2  & Conception architecture, modèle de données, diagrammes UML & 04/05 & 12/05 & Wassim Lazim, Marwan Saadouni \\
+  P3a & Configuration : Next.js, Supabase, Stripe, variables d'env. & 06/05 & 09/05 & Marwan Saadouni \\
+  P3b & Développement back-end Supabase : schéma SQL, RLS, Auth & 11/05 & 21/05 & Wassim Lazim \\
+  P3c & Développement vitrine publique : accueil, carousel, séances & 14/05 & 23/05 & Marwan Saadouni \\
+  P3d & Tunnel de réservation : SeatPicker, snacks, draft cookie & 20/05 & 01/06 & Wassim Lazim \\
+  P3e & Intégration Stripe : Checkout, page de retour, confirmation & 25/05 & 02/06 & Wassim Lazim \\
+  P3f & Dashboard administrateur : CRUD films/séances/snacks, KPIs & 27/05 & 06/06 & Marwan Saadouni \\
+  P4  & Tests fonctionnels manuels, correction des anomalies & 03/06 & 09/06 & Kamal Chaafie \\
+  P5  & Rédaction du rapport technique, mise en forme & 22/05 & 10/06 & Kamal Chaafie \\
+  P6  & Finalisation, revue de code, préparation soutenance & 08/06 & 10/06 & Tous les membres \\
+\end{longtable}
+
+\section{Diagramme de Gantt}
+
+La figure~\ref{fig:gantt} illustre la planification temporelle du projet du 1\textsuperscript{er}~mai au 10~juin~2026. Les phases de développement se chevauchent partiellement selon une logique incrémentale : la rédaction du rapport débute à mi-parcours, en parallèle des développements avancés.
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{gantt.png}{%
+    \includegraphics[width=\textwidth]{gantt.png}%
+  }{%
+    \fbox{\parbox[c][6cm][c]{\textwidth}{%
+      \centering\large\textit{[Insérer ici le diagramme de Gantt — gantt.png]}%
+    }}%
+  }
+  \caption{Diagramme de Gantt — Planification du projet Lumière Cinémas (01/05 – 10/06/2026)}
+  \label{fig:gantt}
+\end{figure}
+
+\section{Diagramme PERT}
+
+Le diagramme PERT (\textit{Program Evaluation and Review Technique}) modélise les dépendances logiques entre les tâches du projet et identifie le \textbf{chemin critique} — la séquence de tâches dont la durée détermine la durée minimale du projet.
+
+\subsection*{Tableau des événements PERT}
+
+Chaque nœud (événement) représente un jalon. ES = date au plus tôt, LS = date au plus tard (en jours depuis le 01/05/2026). La marge = LS $-$ ES.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{clp{5.2cm}ccc}
+\toprule
+\textbf{Évt.} & \textbf{Tâche(s)} & \textbf{Jalon atteint} & \textbf{ES (j)} & \textbf{LS (j)} & \textbf{Marge} \\
+\midrule
+E0  & ---        & Début du projet                  & 0  & 0  & 0\,j \\
+E1  & P1 (7j)    & Analyse des besoins terminée     & 7  & 7  & 0\,j \\
+E2  & P2 (8j)    & Conception \& architecture OK    & 15 & 15 & 0\,j \\
+E3  & P3a (4j)   & Configuration technique OK       & 19 & 19 & 0\,j \\
+E4  & P3b (11j)  & Back-end Supabase terminé        & 30 & 30 & 0\,j \\
+E5  & P3c (10j)  & Vitrine publique terminée        & 29 & 42 & 13\,j \\
+E6  & P3d (12j)  & Tunnel de réservation terminé    & 42 & 42 & 0\,j \\
+E7  & P3e (8j)   & Intégration Stripe terminée      & 50 & 58 & 8\,j \\
+E8  & P3f (10j)  & Dashboard administrateur terminé & 52 & 52 & 0\,j \\
+E9  & P4 + P5    & Tests validés + Rapport rédigé   & 58 & 58 & 0\,j \\
+E10 & P6 (3j)    & Finalisation — Soutenance        & 61 & 61 & 0\,j \\
+\bottomrule
+\end{tabular}
+\caption{Événements PERT — Projet Lumière Cinémas}
+\label{tab:pert}
+\end{table}
+
+\noindent\textbf{Chemin critique :} E0 $\to$ E1 $\to$ E2 $\to$ E3 $\to$ E4 $\to$ E6 $\to$ E8 $\to$ E9 $\to$ E10\\
+\noindent\textbf{Durée totale minimale :} P1(7) + P2(8) + P3a(4) + P3b(11) + P3d(12) + P3f(10) + P4(6) + P6(3) = \textbf{61 jours}.
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{pert.png}{%
+    \includegraphics[width=\textwidth]{pert.png}%
+  }{%
+    \fbox{\parbox[c][7cm][c]{\textwidth}{%
+      \centering\large\itshape [Insérer ici le diagramme PERT — pert.png]\\[0.5cm]
+      \normalsize Chemin critique : E0 $\to$ E1 $\to$ E2 $\to$ E3 $\to$ E4 $\to$ E6 $\to$ E8 $\to$ E9 $\to$ E10\\
+      Durée minimale : \textbf{61 jours}
+    }}%
+  }
+  \caption{Diagramme PERT — Projet Lumière Cinémas. Chemin critique en orange (marge = 0). ES$|$LS exprimés en jours depuis le 01/05/2026.}
+  \label{fig:pert}
+\end{figure}
+
+\section{Synthèse des Éléments Demandés}
+
+Le tableau~\ref{tab:synthese} récapitule l'ensemble des livrables exigibles du rapport de projet de fin d'année et leur localisation.
+
+\begin{longtable}{clp{4.8cm}c}
+  \toprule
+  \textbf{N°} & \textbf{Élément demandé} & \textbf{Localisation} & \textbf{Statut} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  1  & Page de titre et informations académiques      & Page de titre               & $\checkmark$ \\
+  2  & Dédicaces et remerciements                     & Pages préliminaires         & $\checkmark$ \\
+  3  & Résumé du projet                               & Page Résumé                 & $\checkmark$ \\
+  4  & Table des matières                             & Table des matières          & $\checkmark$ \\
+  5  & Liste des abréviations                         & Liste des Abréviations      & $\checkmark$ \\
+  6  & Introduction générale et contexte              & Chapitre 1                  & $\checkmark$ \\
+  7  & \textbf{Cycle de vie du projet} (tableau)      & Section 2.1                 & $\checkmark$ \\
+  8  & \textbf{Planification sous forme de tableau}   & Section 2.3                 & $\checkmark$ \\
+  9  & \textbf{Diagramme de Gantt}                    & Section 2.4                 & $\checkmark$ \\
+  10 & \textbf{Diagramme PERT} avec chemin critique   & Section 2.5                 & $\checkmark$ \\
+  11 & Analyse des besoins fonctionnels               & Section 3.2                 & $\checkmark$ \\
+  12 & Diagramme de cas d'usage (UML)                 & Section 3.4                 & $\checkmark$ \\
+  13 & Architecture technique                         & Section 4.1                 & $\checkmark$ \\
+  14 & Diagramme de classes UML                       & Section 4.3                 & $\checkmark$ \\
+  15 & Diagramme d'activité UML                       & Section 4.5                 & $\checkmark$ \\
+  16 & Diagrammes de séquence UML                     & Section 7.4                 & $\checkmark$ \\
+  17 & Stack technologique justifiée                  & Chapitre 5                  & $\checkmark$ \\
+  18 & Fonctionnalités (captures d'écran)             & Chapitre 6                  & $\checkmark$ \\
+  19 & Implémentation technique (extraits de code)    & Chapitre 7                  & $\checkmark$ \\
+  20 & Tableau de tests et validation                 & Chapitre 8                  & $\checkmark$ \\
+  21 & \textbf{Partie Entrepreneuriat complète}       & Chapitre 11                 & $\checkmark$ \\
+  22 & Matrice SWOT                                   & Section 11.4.5              & $\checkmark$ \\
+  23 & Analyse PESTEL                                 & Section 11.4.5              & $\checkmark$ \\
+  24 & 5 forces de Porter                             & Section 11.4.5              & $\checkmark$ \\
+  25 & Étude de faisabilité financière (tableaux)     & Section 11.7                & $\checkmark$ \\
+  26 & Aspect juridique — forme juridique             & Section 11.8                & $\checkmark$ \\
+  27 & Conclusion générale                            & Conclusion                  & $\checkmark$ \\
+  28 & Annexes (structure projet, références)         & Annexes                     & $\checkmark$ \\
+\caption{Synthèse des éléments demandés — Rapport PFA Lumière Cinémas}
+\label{tab:synthese}
+\end{longtable}
+
+%% ── CHAPITRE 3 ───────────────────────────────────────────────
+\chapter{Analyse des Besoins}
+
+\section{Acteurs du Système}
+
+Le tableau~\ref{tab:acteurs_rapport} identifie les cinq acteurs interagissant avec le système, qu'ils soient humains ou externes.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Acteur} & \textbf{Type} & \textbf{Description et droits} \\
+\midrule
+Visiteur       & Humain — externe & Internaute non authentifié. Accès en lecture seule à la vitrine publique (catalogue, fiches films, programme, séances). Peut initier le tunnel mais est redirigé vers \texttt{/login} avant de réserver. \\
+Utilisateur    & Humain — externe & Spectateur inscrit et connecté (session JWT via cookie). Dispose des droits du visiteur, plus : sélection de sièges, ajout de snacks, paiement Stripe ou espèces, consultation de son historique. Ne peut accéder à aucune page \texttt{/dashboard}. \\
+Administrateur & Humain — interne & Personnel du cinéma avec rôle \texttt{admin} vérifié côté serveur à chaque requête. Accès complet au back-office : CRUD films/séances/salles/snacks, gestion réservations, gestion utilisateurs, visualisation des KPIs. \\
+Stripe         & Système — externe & Passerelle de paiement PCI-DSS. Héberge la page de paiement par carte. Après validation, redirige vers \texttt{/pay/success?session\_id=...} ; cette page vérifie le statut du paiement via l'API Stripe (\texttt{payment\_status === 'paid'}) et déclenche la création de la réservation confirmée en base. \\
+Supabase Auth  & Système — interne & Service d'authentification. Gère les sessions JWT via cookies HTTP (\texttt{@supabase/ssr}), l'inscription, la connexion, la déconnexion, et les politiques RLS sur la base de données. \\
+\bottomrule
+\end{tabularx}
+\caption{Acteurs du système Lumière Cinémas}
+\label{tab:acteurs_rapport}
+\end{table}
+
+\section{Besoins Fonctionnels}
+
+\begin{longtable}{lp{9cm}l}
+  \toprule
+  \textbf{ID} & \textbf{Besoin} & \textbf{Acteur} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  BF-01 & Consulter le catalogue de films (carousel + grille) & Visiteur \\
+  BF-02 & Voir la fiche d'un film (synopsis, trailer, séances) & Visiteur \\
+  BF-03 & Consulter les séances avec places restantes & Visiteur \\
+  BF-04 & S'inscrire et se connecter (Supabase Auth) & Utilisateur \\
+  BF-05 & Sélectionner des places sur plan interactif & Utilisateur \\
+  BF-06 & Ajouter des snacks au panier & Utilisateur \\
+  BF-07 & Payer via Stripe Checkout (carte bancaire) & Utilisateur \\
+  BF-08 & Payer en espèces (réservation en attente) & Utilisateur \\
+  BF-09 & Recevoir un billet de confirmation avec référence & Utilisateur \\
+  BF-10 & Consulter l'historique de ses réservations & Utilisateur \\
+  BF-11 & Gérer les films (CRUD) & Administrateur \\
+  BF-12 & Gérer les séances (CRUD) & Administrateur \\
+  BF-13 & Gérer les snacks (CRUD) & Administrateur \\
+  BF-14 & Consulter toutes les réservations & Administrateur \\
+  BF-15 & Consulter et gérer les utilisateurs & Administrateur \\
+  BF-16 & Voir les statistiques (CA, films, séances, réservations) & Administrateur \\
+  \midrule
+  BF-17 & Consulter le programme quotidien avec filtrage par date et par film & Visiteur \\
+  BF-18 & Consulter la page « Prochainement » (films sans séance planifiée) & Visiteur \\
+  BF-19 & Consulter la page « Salles » (équipements : Dolby Atmos, IMAX, 4K HDR) & Visiteur \\
+  BF-20 & Être redirigé vers \texttt{/login} si non authentifié lors du démarrage du tunnel & Visiteur \\
+  BF-21 & Être bloqué et redirigé si le rôle \texttt{admin} est absent lors de l'accès au dashboard & Utilisateur \\
+  BF-22 & Naviguer dans le tunnel via un stepper 6 étapes avec progression visuelle & Utilisateur \\
+  BF-23 & Conserver l'état de réservation (séance, sièges, snacks) dans un cookie HTTP entre les étapes du tunnel & Utilisateur \\
+  BF-24 & Recevoir un billet numérique avec QR code unique et référence \texttt{LM-AAAA-XXXX} après confirmation & Utilisateur \\
+  BF-25 & Se déconnecter avec invalidation immédiate de la session JWT & Utilisateur \\
+  BF-26 & Gérer les salles de cinéma (CRUD) : capacité, technologie, couleur d'accentuation & Administrateur \\
+  BF-27 & Consulter les KPIs du dashboard calculés en temps réel depuis Supabase & Administrateur \\
+\end{longtable}
+
+\begin{infobox}[Référence au Cahier des Charges]
+\small La liste exhaustive des \textbf{32 besoins fonctionnels} (BF-01 à BF-32) avec priorités MoSCoW, cas d'usage associés, critères d'acceptation et matrice de traçabilité complète est formalisée dans le \textbf{Cahier des Charges Logique (CdCL) Lumière Cinémas v1.0} — document de référence du projet.
+\end{infobox}
+
+\section{Besoins Non-Fonctionnels}
+
+\begin{longtable}{p{1.2cm}lp{8.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Catégorie} & \textbf{Exigence} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-01 & Sécurité        & Les clés \texttt{SUPABASE\_SERVICE\_ROLE\_KEY} et \texttt{STRIPE\_SECRET\_KEY} ne doivent jamais apparaître dans le bundle JavaScript envoyé au navigateur. \\[3pt]
+  BNF-02 & Sécurité        & Toutes les mutations critiques (réservation, paiement, CRUD admin) transitent exclusivement par des Server Actions (\texttt{'use server'}). \\[3pt]
+  BNF-03 & Sécurité        & L'accès au dashboard est vérifié côté serveur à chaque requête : session active + rôle \texttt{admin} dans la table \texttt{profiles}. \\[3pt]
+  BNF-04 & Sécurité        & Un utilisateur ne peut lire que ses propres réservations et son propre profil (Row Level Security Supabase). \\[3pt]
+  BNF-05 & Sécurité        & Le numéro de carte bancaire ne transite jamais par les serveurs de l'application (délégation à Stripe Checkout PCI-DSS Level~1). \\[3pt]
+  BNF-06 & Sécurité        & Les données personnelles sont conformes à la loi marocaine 09-08 (CNDP). \\[3pt]
+  BNF-07 & Performance     & FCP $<$ 2\,s sur les pages publiques, connexion 4G simulée (Server-Side Rendering avec React Server Components). \\[3pt]
+  BNF-08 & Performance     & Le SeatPicker charge les sièges disponibles en moins de 1,5\,s (chargement des sièges occupés côté serveur avant rendu). \\[3pt]
+  BNF-09 & Performance     & Interface responsive et fonctionnelle dès 320\,px de large (mobile first). \\[3pt]
+  BNF-10 & Disponibilité   & L'application est disponible 24h/24, 7j/7 avec une cible $\geq$ 99,5\,\% (Vercel SLA 99,99\,\%). \\[3pt]
+  BNF-11 & Fiabilité       & Deux utilisateurs ne peuvent pas réserver les mêmes sièges simultanément : les sièges occupés sont rechargés depuis Supabase à chaque rendu de la page séance. \\[3pt]
+  BNF-12 & Fiabilité       & En cas de paiement Stripe validé, la réservation est créée de manière atomique en base sans risque de doublon (vérification \texttt{payment\_status === 'paid'}). \\[3pt]
+  BNF-13 & Maintenabilité  & TypeScript strict (\texttt{strict: true}) sur l'ensemble du code source. \\[3pt]
+  BNF-14 & Maintenabilité  & Entités métier centralisées dans \texttt{lib/types.ts} (\texttt{Film}, \texttt{Screening}, \texttt{Snack}, \texttt{Seat}, \texttt{Reservation}). \\[3pt]
+  BNF-15 & Maintenabilité  & Le build de production passe sans erreur TypeScript ni ESLint (\texttt{npm run build \&\& npm run lint}). \\
+\end{longtable}
+
+\section{Cas d'Usage}
+
+La figure \ref{fig:uml_usecase} illustre les cas d'usage principaux du système.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{uml_usecase.png}
+  \caption{Diagramme des cas d'usage — Lumière Cinémas}
+  \label{fig:uml_usecase}
+\end{figure}
+
+%% ── CHAPITRE 4 ───────────────────────────────────────────────
+\chapter{Architecture et Conception}
+
+\section{Architecture Générale}
+
+L'application repose sur le paradigme \textbf{Server-Side Rendering (SSR)} et les \textbf{Server Actions} de Next.js 15. Cette architecture à deux niveaux (serveur / client) garantit que la logique métier critique et les clés d'API ne transitent jamais par le navigateur.
+
+\begin{infobox}[Flux de données global]
+Navigateur $\rightarrow$ \textbf{Next.js App Router} (React Server Components)
+$\rightarrow$ \textbf{Server Actions} (\texttt{actions.ts})
+$\rightarrow$ \textbf{Supabase} (PostgreSQL) / \textbf{Stripe} API
+\end{infobox}
+
+La figure \ref{fig:uml_architecture} présente l'architecture globale du système.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{uml_architecture.png}
+  \caption{Architecture technique — Lumière Cinémas}
+  \label{fig:uml_architecture}
+\end{figure}
+
+\section{Structure des Routes Next.js}
+
+L'App Router de Next.js organise les pages selon la hiérarchie du système de fichiers :
+
+\begin{itemize}
+  \item \textbf{Routes publiques} : \texttt{/}, \texttt{/films/[id]}, \texttt{/seances/[id]}, \texttt{/programme}, \texttt{/prochainement}, \texttt{/salles}
+  \item \textbf{Routes authentification} : \texttt{/login}, \texttt{/signup}
+  \item \textbf{Routes tunnel réservation} : \texttt{/seances/[id]}, \texttt{/snacks}, \texttt{/pay}, \texttt{/pay/success}, \texttt{/confirm/[id]}
+  \item \textbf{Routes utilisateur} : \texttt{/account}, \texttt{/mes-reservations}
+  \item \textbf{Routes admin} : \texttt{/dashboard}, \texttt{/dashboard/films}, \texttt{/dashboard/seances},\\
+        \texttt{/dashboard/salles}, \texttt{/dashboard/snacks}, \texttt{/dashboard/reservations}, \texttt{/dashboard/utilisateurs}
+\end{itemize}
+
+\section{Modèle de Données}
+
+Le modèle logique de données est implémenté en PostgreSQL via Supabase. La figure \ref{fig:uml_classes} présente le diagramme de classes complet.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{uml_classes.png}
+  \caption{Diagramme de classes — Modèle de données Supabase}
+  \label{fig:uml_classes}
+\end{figure}
+
+Les entités principales sont :
+
+\begin{longtable}{lp{9cm}}
+  \toprule
+  \textbf{Table} & \textbf{Description} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  \texttt{films}        & Catalogue des films : titre, réalisateur, année, durée (\texttt{duration}), genres (tableau), casting (\texttt{cast\_members}), synopsis, tagline, affiche (\texttt{poster\_url}), gradients CSS de repli (\texttt{poster\_gradient}, \texttt{backdrop\_gradient}), couleur d'accent (\texttt{accent\_tone}), URL de bande-annonce (\texttt{trailer\_url}, optionnel) \\
+  \texttt{screenings}   & Séances planifiées : film associé (\texttt{film\_id}), date/heure (\texttt{starts\_at}), libellé de salle (\texttt{room}, texte), format (VOSTFR, IMAX…), nombre de sièges, prix par catégorie \\
+  \texttt{rooms}        & Catalogue des salles physiques : nom, technologie (\texttt{tech}), capacité, description, couleur d'accent. Alimente la page publique \texttt{/salles} et le CRUD \texttt{/dashboard/salles} \\
+  \texttt{snacks}       & Inventaire des confiseries : nom, taille, prix, emoji, description \\
+  \texttt{reservations} & Réservations : utilisateur, séance, tableau des sièges choisis (\texttt{seats}), catégories par siège (\texttt{seat\_categories}), snacks (dictionnaire quantités), total, statut, référence unique \\
+  \texttt{profiles}     & Profils utilisateurs synchronisés avec \texttt{auth.users} : rôle (\texttt{user}/\texttt{admin}), email \\
+\end{longtable}
+
+\section{Gestion de l'État — Le Draft Cookie}
+
+Le tunnel de réservation traverse plusieurs pages sans rechargement. L'état intermédiaire (séance choisie, sièges sélectionnés, snacks) est persisté dans un cookie HTTP via le module \texttt{lib/booking.ts} :
+
+\begin{lstlisting}
+// lib/booking.ts
+'use server';
+export type Draft = {
+  screeningId: string;
+  seats: { id: string; category: 'standard' | 'premium' | 'duo'; price: number }[];
+  snacks: Record<string, number>;
+};
+
+export async function setDraft(d: Draft) {
+  const c = await cookies();
+  c.set('lumiere_draft', JSON.stringify(d), {
+    httpOnly: false, path: '/', maxAge: 60 * 60
+  });
+}
+\end{lstlisting}
+
+Ce choix évite toute dépendance à un store global (Redux, Zustand) et reste compatible avec le SSR.
+
+\section{Diagramme d'Activité — Tunnel de Réservation}
+
+La figure \ref{fig:uml_activite} illustre le flux d'activité complet d'une réservation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\textwidth]{uml_activite.png}
+  \caption{Diagramme d'activité — Tunnel de réservation}
+  \label{fig:uml_activite}
+\end{figure}
+
+%% ── CHAPITRE 5 ───────────────────────────────────────────────
+\chapter{Stack Technologique}
+
+\section{Tableau des Technologies}
+
+\begin{tabular}{l|l|l}
+\toprule
+\textbf{Catégorie} & \textbf{Technologie} & \textbf{Version} \\
+\midrule
+Framework Web       & Next.js (App Router)    & 15.x \\
+Langage             & TypeScript              & 5.x \\
+UI Library          & React                   & 19.x \\
+Style               & CSS personnalisé (variables) & — \\
+Base de données     & Supabase (PostgreSQL)   & Latest \\
+Authentification    & Supabase Auth (SSR)     & @supabase/ssr \\
+Paiement            & Stripe                  & stripe 22.x \\
+Composants UI       & 21st.dev                & — \\
+Chatbot (RAG)       & Groq — Llama 3.1 8B     & @ai-sdk/groq, ai \\
+Runtime             & Node.js                 & 18.x+ \\
+\midrule
+Minimum Node.js     & 18.x                    & — \\
+\bottomrule
+\end{tabular}
+
+\section{Justification des Choix}
+
+\begin{itemize}
+  \item \textbf{Next.js 15 App Router} : Architecture RSC native permettant le rendu serveur de chaque page, les Server Actions pour les mutations sécurisées, et le routage imbriqué par dossiers.
+  \item \textbf{Supabase} : Alternative open-source à Firebase, fournissant une base PostgreSQL managée, un système d'authentification production-ready avec gestion des sessions par cookies (via \texttt{@supabase/ssr}), et des politiques RLS granulaires.
+  \item \textbf{Stripe} : Standard de l'industrie pour le paiement en ligne. L'intégration via Stripe Checkout externalise la page de paiement, éliminant le besoin de manipuler des données de carte.
+  \item \textbf{TypeScript strict} : Typage complet des entités (\texttt{Film}, \texttt{Screening}, \texttt{Reservation}, \texttt{Seat}…) garantissant la cohérence entre la base de données et l'interface.
+  \item \textbf{CSS personnalisé} : Variables CSS globales pour le thème visuel (couleurs, typographie) sans dépendance à un framework UI, permettant un contrôle pixel-perfect de l'interface.
+  \item \textbf{21st.dev} : Bibliothèque de composants React/Next.js utilisée comme référence et source de composants UI prêts à l'emploi, accélérant le développement de l'interface tout en maintenant une cohérence visuelle.
+  \item \textbf{Groq (Llama 3.1 8B)} : Fournisseur d'inférence LLM à très faible latence, utilisé pour l'assistant conversationnel. Combiné à un module de récupération RAG local (TF-IDF), il répond aux questions des visiteurs sur le cinéma sans dépendre d'un service propriétaire coûteux (offre gratuite).
+\end{itemize}
+
+%% ── CHAPITRE 6 ───────────────────────────────────────────────
+\chapter{Fonctionnalités et Interface Utilisateur}
+
+\section{Page d'Accueil — Catalogue et HeroCarousel}
+
+La page d'accueil (\texttt{app/page.tsx}) est un React Server Component qui récupère la liste complète des films depuis Supabase au moment du rendu côté serveur. Elle présente deux sections principales :
+
+\begin{enumerate}
+  \item \textbf{HeroCarousel} (\texttt{components/HeroCarousel.tsx}) : Un carousel immersif affichant les films en vedette avec leurs affiches, gradients CSS dynamiques, et un appel à l'action « Voir les séances ».
+  \item \textbf{Grille de films} : Cartes cliquables affichant l'affiche, le titre, la durée, le genre et la classification de chaque film.
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_accueil.png}
+  \caption{Page d'accueil — HeroCarousel et grille de films}
+  \label{fig:screen_accueil}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_catalogue.png}
+  \caption{Grille du catalogue de films}
+  \label{fig:screen_catalogue}
+\end{figure}
+
+\section{Fiche Film et Bande-Annonce}
+
+La page \texttt{app/films/[id]/page.tsx} affiche la fiche complète d'un film :
+
+\begin{itemize}
+  \item En-tête hero avec backdrop gradient dynamique et affiche du film
+  \item Métadonnées : réalisateur, durée, genres, classification
+  \item Synopsis complet et listing du casting
+  \item Bande-annonce YouTube intégrée (normalisation automatique de l'URL vers le format embed)
+  \item Liste des séances disponibles avec places restantes, via \texttt{ScreeningsList}
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_detail_film.png}
+  \caption{Fiche détaillée d'un film avec bande-annonce et séances}
+  \label{fig:screen_detail_film}
+\end{figure}
+
+\section{Stepper — Navigation Guidée}
+
+Le composant \texttt{Stepper} affiche la progression dans le tunnel de réservation. Il comporte 6 étapes définies statiquement :
+
+\begin{center}
+\textbf{01 Films} $\rightarrow$ \textbf{02 Séance} $\rightarrow$ \textbf{03 Places} $\rightarrow$ \textbf{04 Snacks} $\rightarrow$ \textbf{05 Paiement} $\rightarrow$ \textbf{06 Billet}
+\end{center}
+
+Chaque page du tunnel reçoit la prop \texttt{current} pour indiquer l'étape active. Les étapes précédentes sont marquées \texttt{is-done}, l'étape courante \texttt{is-on}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_stepper.png}
+  \caption{Stepper — indicateur de progression du tunnel}
+  \label{fig:screen_stepper}
+\end{figure}
+
+\section{Sélection des Séances}
+
+La page \texttt{app/seances/[id]/page.tsx} charge côté serveur :
+\begin{enumerate}
+  \item Les détails de la séance (film associé, salle, format, prix par catégorie)
+  \item Les sièges déjà réservés pour cette séance depuis la table \texttt{reservations}
+  \item La carte de la salle générée dynamiquement par \texttt{buildSeatMap()} depuis \texttt{lib/seatmap.ts}
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_seances.png}
+  \caption{Page de sélection de séance avec disponibilités}
+  \label{fig:screen_seances}
+\end{figure}
+
+\section{Sélection des Places — SeatPicker}
+
+Le composant \texttt{SeatPicker} (\texttt{components/SeatPicker.tsx}) est le composant le plus complexe de l'application. Il est rendu côté client (\texttt{'use client'}) car il gère un état local interactif.
+
+Caractéristiques :
+\begin{itemize}
+  \item Affichage de la salle en 2D avec rangées (A à P) et colonnes numérotées
+  \item \textbf{3 catégories de sièges} : Standard (gris foncé, 35,00 MAD), Premium (or, 55,00 MAD), Duo (rouge, 75,00 MAD) — prix par défaut, surchargeables par séance via les champs \texttt{price\_*} de la table \texttt{screenings}
+  \item Sièges occupés désactivés visuellement (opacité réduite, non cliquables)
+  \item Sièges sélectionnés mis en évidence avec la couleur d'accent
+  \item Couloir de séparation central calculé automatiquement
+  \item Panneau latéral récapitulatif avec liste des sièges sélectionnés, sous-total et bouton « Continuer »
+  \item À la validation : appel de la Server Action \texttt{pickSeats()} qui sauvegarde le draft en cookie et redirige vers \texttt{/snacks}
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_seatpicker.png}
+  \caption{Composant SeatPicker — Plan interactif de la salle}
+  \label{fig:screen_seatpicker}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_seatpicker_selection.png}
+  \caption{SeatPicker avec sièges sélectionnés et panneau récapitulatif}
+  \label{fig:screen_seatpicker_selection}
+\end{figure}
+
+\section{Sélection des Snacks}
+
+La page \texttt{app/snacks/page.tsx} présente le catalogue de confiseries disponibles (récupéré depuis Supabase), permettant à l'utilisateur d'ajouter des articles à son panier avant de procéder au paiement. La Server Action \texttt{addSnacks()} met à jour le draft cookie avec les quantités choisies.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_snacks.png}
+  \caption{Page de sélection des snacks}
+  \label{fig:screen_snacks}
+\end{figure}
+
+\section{Paiement — Stripe Checkout}
+
+La page \texttt{app/pay/page.tsx} affiche le récapitulatif final de la commande (sièges + snacks) et propose deux modes de règlement :
+
+\begin{itemize}
+  \item \textbf{Paiement en ligne (Stripe)} : La Server Action \texttt{createCheckoutSession()} crée une session Stripe avec le montant calculé et redirige vers la page Stripe hébergée. Les métadonnées de réservation (siège, snacks, nom, séance) sont encodées dans la session Stripe pour être récupérées après paiement.
+  \item \textbf{Paiement en espèces} : La Server Action \texttt{createCashReservation()} crée directement la réservation en base avec le statut \texttt{pending} et génère une référence unique (\texttt{LM-YYYY-XXXX}).
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_paiement.png}
+  \caption{Page de paiement — récapitulatif et options de règlement}
+  \label{fig:screen_paiement}
+\end{figure}
+
+\section{Confirmation et Billet}
+
+Après paiement Stripe validé, la page \texttt{/pay/success} est appelée avec le \texttt{session\_id} Stripe. Elle :
+\begin{enumerate}
+  \item Vérifie le statut de la session Stripe (\texttt{payment\_status === 'paid'})
+  \item Relit les métadonnées encodées (sièges, snacks, nom)
+  \item Crée la réservation en base Supabase avec statut \texttt{confirmed}
+  \item Génère la référence de réservation (\texttt{LM-YYYY-XXXX})
+  \item Redirige vers \texttt{/confirm/[id]} — la page billet
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_confirmation.png}
+  \caption{Billet de confirmation avec référence de réservation}
+  \label{fig:screen_confirmation}
+\end{figure}
+
+\section{Espace Utilisateur}
+
+\subsection{Authentification}
+
+L'inscription (\texttt{/signup}) et la connexion (\texttt{/login}) utilisent Supabase Auth via le package \texttt{@supabase/ssr}. Les sessions sont gérées par cookies HTTP-only, ce qui permet au middleware Next.js et aux Server Components de lire l'utilisateur courant sans appel côté client.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{screen_login.png}
+    \caption{Page de connexion}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{screen_signup.png}
+    \caption{Page d'inscription}
+  \end{subfigure}
+  \caption{Pages d'authentification}
+  \label{fig:screen_auth}
+\end{figure}
+
+\subsection{Historique des Réservations}
+
+La page \texttt{/mes-reservations} affiche l'historique complet des billets achetés par l'utilisateur connecté, avec les détails de chaque séance et la liste des sièges réservés.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_mes_reservations.png}
+  \caption{Historique des réservations de l'utilisateur}
+  \label{fig:screen_mes_reservations}
+\end{figure}
+
+\section{Dashboard Administrateur}
+
+\subsection{Protection et Accès}
+
+L'accès au dashboard est protégé par le layout \texttt{app/dashboard/layout.tsx} qui vérifie côté serveur :
+\begin{enumerate}
+  \item L'existence d'une session active (Supabase Auth)
+  \item Le rôle \texttt{admin} dans la table \texttt{profiles}
+\end{enumerate}
+Tout accès non autorisé est redirigé vers \texttt{/login} ou \texttt{/} selon le cas.
+
+\subsection{Vue d'Ensemble}
+
+La page \texttt{/dashboard} affiche 4 indicateurs clés calculés en temps réel depuis Supabase :
+\begin{itemize}
+  \item Nombre total de films au catalogue
+  \item Nombre total de séances programmées
+  \item Nombre de réservations confirmées
+  \item Chiffre d'affaires total des réservations confirmées (en MAD)
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_dashboard.png}
+  \caption{Dashboard administrateur — Vue d'ensemble et KPIs}
+  \label{fig:screen_dashboard}
+\end{figure}
+
+\subsection{Gestion des Films}
+
+La section \texttt{/dashboard/films} propose un CRUD complet : liste paginée, formulaire de création (\texttt{FilmForm.tsx}), formulaire d'édition, et suppression avec confirmation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_dashboard_films.png}
+  \caption{Dashboard — Gestion des films (CRUD)}
+  \label{fig:screen_dashboard_films}
+\end{figure}
+
+\subsection{Gestion des Séances}
+
+La section \texttt{/dashboard/seances} permet de planifier de nouvelles séances (\texttt{ScreeningForm.tsx}) en associant un film, une date/heure, une salle, un format et des prix par catégorie de siège.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.90\textwidth]{screen_dashboard_seances.png}
+  \caption{Dashboard — Gestion des séances}
+  \label{fig:screen_dashboard_seances}
+\end{figure}
+
+\subsection{Gestion des Réservations et Utilisateurs}
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{screen_dashboard_reservations.png}
+    \caption{Liste des réservations}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{screen_dashboard_utilisateurs.png}
+    \caption{Gestion des utilisateurs}
+  \end{subfigure}
+  \caption{Dashboard — Réservations et utilisateurs}
+  \label{fig:screen_dashboard_admin}
+\end{figure}
+
+\section{Assistant Conversationnel (Chatbot RAG)}
+
+L'application intègre un assistant conversationnel flottant (\texttt{components/ChatBubble.tsx}) accessible depuis toutes les pages publiques. Il répond aux questions des visiteurs (films à l'affiche, fonctionnement de la réservation, salles, équipe projet) selon une architecture \textbf{RAG} (\textit{Retrieval-Augmented Generation}) :
+
+\begin{enumerate}
+  \item \textbf{Retrieval} : la requête de l'utilisateur est confrontée à une base de connaissances locale (\texttt{lib/knowledge.ts}) via un score de similarité \textbf{TF-IDF} (\texttt{lib/rag.ts}). Les trois fragments les plus pertinents sont sélectionnés.
+  \item \textbf{Augmentation} : ces fragments enrichissent le prompt système envoyé au modèle, garantissant des réponses ancrées dans le contexte réel du projet et limitant les hallucinations.
+  \item \textbf{Generation} : la route API \texttt{app/api/chat/route.ts} appelle le modèle \textbf{Llama 3.1 8B} hébergé par \textbf{Groq} (via \texttt{@ai-sdk/groq}) pour produire la réponse finale.
+\end{enumerate}
+
+La clé \texttt{GROQ\_API\_KEY} reste exclusivement côté serveur (route API), conformément au principe de non-exposition des clés au navigateur.
+
+%% ── CHAPITRE 7 ───────────────────────────────────────────────
+\chapter{Implémentation Technique}
+\label{chap:impl}
+
+\section{Génération du Plan de Salle}
+
+La fonction \texttt{buildSeatMap()} dans \texttt{lib/seatmap.ts} génère dynamiquement le plan de salle en fonction du nombre total de sièges de la séance :
+
+\begin{lstlisting}
+export function buildSeatMap(
+  occupied: Set<string> = new Set(),
+  totalSeats: number = 112
+): { row: string; seats: Seat[] }[] {
+  const rowLabels = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P'];
+  const cols = Math.max(6, Math.ceil(Math.sqrt(totalSeats)));
+  const rows = Math.ceil(totalSeats / cols);
+
+  return rowLabels.slice(0, rows).map((r, ri) => {
+    const seats: Seat[] = [];
+    for (let c = 1; c <= cols; c++) {
+      let category: SeatCategory = 'standard';
+      const midCols = Math.floor(cols / 2);
+      // Centre de la salle = Premium
+      if (ri >= Math.floor(rows/2 - 1) && ri <= Math.floor(rows/2 + 1)
+          && c >= midCols - 3 && c <= midCols + 3) {
+        category = 'premium';
+      }
+      seats.push({
+        id: `${r}${c}`, row: r, col: c, category,
+        isDuo: false, duoPartner: null,
+        occupied: occupied.has(`${r}${c}`),
+        aisleAfter: c === Math.ceil(cols / 2),
+      });
+    }
+    return { row: r, seats };
+  });
+}
+\end{lstlisting}
+
+\section{Création de la Session Stripe}
+
+La Server Action \texttt{createCheckoutSession()} dans \texttt{app/pay/actions.ts} assemble le montant total, encode les métadonnées de réservation et crée la session Stripe :
+
+\begin{lstlisting}
+'use server';
+export async function createCheckoutSession(formData: FormData) {
+  const draft = await getDraft();
+  if (!draft) redirect('/');
+
+  const supabase = await createClient();
+  const { data: snacks } = await supabase.from('snacks').select('id,price');
+  const priceById = new Map((snacks || []).map(s => [s.id, Number(s.price)]));
+
+  const seatsTotal = draft.seats.reduce((a, s) => a + s.price, 0);
+  const snacksTotal = Object.entries(draft.snacks).reduce(
+    (a, [id, q]) => a + (priceById.get(id) || 0) * q, 0
+  );
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [{
+      price_data: {
+        currency: 'mad',
+        product_data: { name: 'Réservation cinéma' },
+        unit_amount: Math.round((seatsTotal + snacksTotal) * 100),
+      },
+      quantity: 1,
+    }],
+    mode: 'payment',
+    customer_email: email,
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/pay/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pay`,
+    metadata: {
+      fullName, screeningId: draft.screeningId,
+      seats: JSON.stringify(draft.seats),
+      snacks: JSON.stringify(draft.snacks),
+    },
+  });
+
+  redirect(session.url!);
+}
+\end{lstlisting}
+
+\section{Protection du Dashboard Admin}
+
+Le layout serveur \texttt{app/dashboard/layout.tsx} vérifie l'authentification et le rôle avant de rendre les pages enfants :
+
+\begin{lstlisting}
+export default async function DashboardLayout({ children }) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login?next=/dashboard');
+
+  const { data: profile } = await supabase
+    .from('profiles').select('role,email').eq('id', user.id).single();
+  if (profile?.role !== 'admin') redirect('/');
+
+  return <div className="dash">...{children}</div>;
+}
+\end{lstlisting}
+
+\begin{warningbox}[Sécurité critique]
+Aucune clé d'API Supabase service-role ni clé Stripe secrète n'est incluse dans le bundle JavaScript envoyé au navigateur. Toutes les opérations sensibles transitent exclusivement par des Server Actions ou des Server Components.
+\end{warningbox}
+
+\section{Diagrammes de Séquence}
+
+\subsection{Flux de Réservation Complet}
+
+La figure \ref{fig:uml_sequence_resa} illustre le diagramme de séquence du tunnel de réservation de bout en bout.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{uml_sequence_reservation.png}
+  \caption{Diagramme de séquence — Tunnel de réservation}
+  \label{fig:uml_sequence_resa}
+\end{figure}
+
+\subsection{Flux de Paiement Stripe}
+
+La figure \ref{fig:uml_sequence_stripe} illustre les interactions avec l'API Stripe lors du paiement en ligne.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{uml_sequence_paiement.png}
+  \caption{Diagramme de séquence — Paiement Stripe}
+  \label{fig:uml_sequence_stripe}
+\end{figure}
+
+%% ── CHAPITRE 8 ───────────────────────────────────────────────
+\chapter{Tests et Validation}
+
+\section{Tests Fonctionnels Réalisés}
+
+\begin{longtable}{lp{7cm}l}
+  \toprule
+  \textbf{Test} & \textbf{Description} & \textbf{Résultat} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+  TF-01 & Parcours complet de réservation (Stripe) : sélection séance $\rightarrow$ siège $\rightarrow$ snacks $\rightarrow$ paiement $\rightarrow$ confirmation & \textcolor{blue}{OK} \\
+  TF-02 & Parcours complet de réservation (espèces) & \textcolor{blue}{OK} \\
+  TF-03 & Blocage accès dashboard pour utilisateur non admin & \textcolor{blue}{OK} \\
+  TF-04 & Blocage accès dashboard sans authentification & \textcolor{blue}{OK} \\
+  TF-05 & Sièges occupés non sélectionnables dans SeatPicker & \textcolor{blue}{OK} \\
+  TF-06 & CRUD films depuis dashboard & \textcolor{blue}{OK} \\
+  TF-07 & CRUD séances depuis dashboard & \textcolor{blue}{OK} \\
+  TF-08 & CRUD snacks depuis dashboard & \textcolor{blue}{OK} \\
+  TF-09 & Affichage bande-annonce YouTube (normalisation URL) & \textcolor{blue}{OK} \\
+  TF-10 & Draft cookie expiré redirige vers accueil & \textcolor{blue}{OK} \\
+  TF-11 & Statistiques dashboard correctes (CA, comptages) & \textcolor{blue}{OK} \\
+\end{longtable}
+
+\section{Tests à Implémenter}
+
+\begin{itemize}
+  \item \textbf{Tests unitaires} (Jest) : Fonction \texttt{buildSeatMap()}, calcul du total (sièges + snacks), génération de référence
+  \item \textbf{Tests d'intégration} (Jest + Supabase test DB) : Server Actions CRUD, politiques RLS
+  \item \textbf{Tests End-to-End} (Playwright) : Tunnel de réservation complet, flux de connexion, dashboard admin
+\end{itemize}
+
+%% ── CHAPITRE 9 ───────────────────────────────────────────────
+\chapter{Mise en Route et Configuration}
+
+\section{Variables d'Environnement}
+
+Le fichier \texttt{.env.local} à la racine du projet doit contenir les variables suivantes :
+
+\begin{lstlisting}
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+SUPABASE_SERVICE_ROLE_KEY=eyJ...   # jamais exposee au client
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...      # jamais exposee au client
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+\end{lstlisting}
+
+\section{Lancement en Développement}
+
+\begin{lstlisting}[language=bash]
+npm install          # installation des dependances
+npm run dev          # serveur de developpement (localhost:3000)
+npm run build        # verification du build de production
+npm run lint         # verification TypeScript + ESLint
+\end{lstlisting}
+
+L'application est accessible localement à l'adresse \texttt{http://localhost:3000}. Le serveur de développement Next.js assure le rechargement automatique à chaque modification du code source.
+
+\section{Base de Données Supabase}
+
+\begin{itemize}
+  \item Schéma initial créé via le fichier \texttt{supabase/schema.sql}
+  \item Row-Level Security (RLS) activée sur toutes les tables
+  \item Politique RLS \texttt{profiles} : les utilisateurs ne lisent que leur propre profil ; les admins lisent tout
+  \item Politique RLS \texttt{reservations} : les utilisateurs ne voient que leurs propres réservations
+  \item Trigger \texttt{handle\_new\_user()} : création automatique d'un profil dans \texttt{profiles} à chaque inscription
+\end{itemize}
+
+%% ── CHAPITRE 10 ──────────────────────────────────────────────
+\chapter{Perspectives Futures}
+
+\section{Court Terme}
+
+\begin{itemize}
+  \item Implémenter tests automatisés (Playwright E2E, Jest unitaires)
+  \item Notifications email de confirmation de réservation (Resend ou SendGrid)
+  \item Optimiser les requêtes Supabase avec indexation sur \texttt{screening\_id} et \texttt{user\_id}
+  \item Ajouter la pagination dans le dashboard (films, réservations)
+\end{itemize}
+
+\section{Moyen Terme}
+
+\begin{itemize}
+  \item Intégration des sièges Duo réels (gestion des paires de sièges liés)
+  \item Système de fidélité (points cumulés, réductions automatiques)
+  \item Filtres avancés dans le catalogue (genre, format, date)
+  \item Génération et envoi de QR-codes scannable à l'entrée de la salle
+  \item Statistiques avancées dans le dashboard (taux d'occupation par salle, revenus par film)
+\end{itemize}
+
+\section{Long Terme}
+
+\begin{itemize}
+  \item Extension multi-cinémas avec sélection de l'établissement
+  \item Déploiement en production sur Vercel avec intégration GitHub (CI/CD automatisé)
+  \item Application mobile compagnon (React Native / Expo)
+  \item Système de prévente et avant-premières exclusives avec quota
+  \item Intégration d'un système de recommandation de films personnalisé
+  \item Monétisation avec places VIP et offres groupées (famille, scolaire)
+\end{itemize}
+
+%% ── CHAPITRE 11 — ENTREPRENEURIAT ───────────────────────────
+\chapter{Partie Entrepreneuriat \& Business Plan}
+
+%% ── 11.1 ──────────────────────────────────────────────────────
+\section{Contexte et Identification du Problème}
+
+\subsection{Le secteur du cinéma au Maroc}
+
+Le cinéma marocain connaît depuis 2018 une renaissance significative, portée par l'émergence de complexes multiplex modernes dans les principales métropoles du Royaume. En 2024, le Maroc compte environ 50 salles de cinéma actives, dont une forte concentration à Casablanca (environ 18 salles), Rabat, Marrakech, Fès et Agadir. La fréquentation nationale s'est établie autour de 3,5~millions d'entrées en 2023, témoignant d'une reprise soutenue après les fermetures liées à la pandémie de Covid-19.
+
+Les acteurs majeurs du secteur sont : \textbf{Megarama} (groupe français implanté au Maroc), \textbf{Colisée Cinémas} (Casablanca, Marrakech), \textbf{IMAX Morocco} (Casablanca), ainsi que des salles indépendantes comme le Dawliz, le Rif ou l'ABC. Le Centre Cinématographique Marocain (CCM) joue le rôle de régulateur et de promoteur de la production nationale.
+
+\subsection{Tendances du marché}
+
+\begin{itemize}
+  \item \textbf{Digitalisation accélérée :} le taux de pénétration d'Internet mobile au Maroc dépasse 89\,\% en 2024, avec plus de 28~millions d'abonnés (ANRT 2024). Les Marocains effectuent de plus en plus leurs achats en ligne.
+  \item \textbf{Population jeune :} plus de 52\,\% de la population a moins de 30~ans (HCP 2024) — tranche d'âge première consommatrice de cinéma et la plus à l'aise avec les solutions numériques.
+  \item \textbf{Essor du e-commerce :} le volume du e-commerce marocain a atteint 11,3~milliards de MAD en 2023 (CMI), avec une croissance annuelle de 23\,\%.
+  \item \textbf{Concurrence VOD :} Netflix, Shahid et OSN+ ont modifié les comportements mais n'ont pas tué la salle — elles ont habitué le public à une expérience numérique fluide qu'il exige désormais au cinéma.
+\end{itemize}
+
+\subsection{Identification du problème}
+
+Malgré cette modernisation, l'expérience de réservation au Maroc reste marquée par de nombreuses frictions :
+
+\begin{itemize}
+  \item \textbf{Files d'attente aux guichets :} dans les complexes populaires, les queues les vendredis et samedis soirs peuvent dépasser 20 à 30~minutes.
+  \item \textbf{Manque de visibilité du programme :} absence de plateforme centralisée nationale.
+  \item \textbf{Absence de sélection de siège en ligne :} la quasi-totalité des cinémas marocains ne proposent pas de plan de salle interactif.
+  \item \textbf{Modes de paiement limités :} la grande majorité des transactions se font encore en espèces.
+  \item \textbf{Aucun historique de réservation :} sans compte client ni billet numérique, aucune personnalisation n'est possible.
+\end{itemize}
+
+\subsection{Limites des solutions existantes}
+
+\textbf{Cinemashi.ma} est le principal agrégateur de programme cinéma au Maroc. S'il centralise les horaires, il ne propose pas de réservation en ligne avec paiement intégré ni de sélection de sièges. Les cinémas eux-mêmes (Megarama, Colisée) proposent ponctuellement des réservations via leurs propres sites, mais ces interfaces sont disparates, sans plan de salle unifié et sans tunnel de paiement moderne. Il n'existe au Maroc aucune plateforme offrant l'ensemble : programme centralisé + sélection de siège + paiement en ligne + billet numérique QR code + dashboard de gestion opérateur — ce que Lumière Cinémas propose.
+
+%% ── 11.2 ──────────────────────────────────────────────────────
+\section{Présentation de l'Idée et de la Solution}
+
+\subsection{Description de la solution}
+
+\textbf{Lumière Cinémas} est une plateforme web fullstack de réservation de billets de cinéma en ligne, conçue pour répondre aux lacunes identifiées sur le marché marocain. Elle s'adresse simultanément aux \textbf{spectateurs} (expérience de réservation moderne de bout en bout) et aux \textbf{exploitants de salles} (back-office complet de gestion opérationnelle).
+
+\subsection{Fonctionnalités principales}
+
+\begin{itemize}
+  \item Catalogue films avec carrousel immersif et recherche instantanée
+  \item Fiche film détaillée : synopsis, casting, durée, classification, bande-annonce YouTube
+  \item \textbf{Plan de salle interactif (SeatPicker)} : 3 catégories — Standard (35,00 MAD), Premium (55,00 MAD), Duo (75,00 MAD)
+  \item Sélection de snacks en ligne avant la séance
+  \item Tunnel de paiement sécurisé Stripe Checkout + option espèces
+  \item Billet numérique avec QR code unique (référence LM-AAAA-XXXX)
+  \item Historique des réservations utilisateur
+  \item Programme par jour, page Prochainement, présentation des salles
+  \item Back-office administrateur complet : KPIs, CRUD films/séances/snacks/salles, gestion réservations et utilisateurs
+\end{itemize}
+
+\subsection{Technologies utilisées}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lllp{4.5cm}}
+\toprule
+\textbf{Couche} & \textbf{Technologie} & \textbf{Version} & \textbf{Rôle} \\
+\midrule
+Framework      & Next.js        & 15.0.3  & App Router, Server Components, SSR \\
+Langage        & TypeScript     & 5.x     & Typage statique, composants React 19 \\
+Base de données& Supabase (PG)  & Latest  & Données relationnelles + RLS \\
+Auth           & Supabase Auth  & Latest  & Sessions JWT via cookies \\
+Paiement       & Stripe Checkout& 22.1.1  & Paiement sécurisé par carte \\
+Stockage       & Supabase Storage& Latest & Upload/diffusion affiches films \\
+QR Code        & qrcode (npm)   & 1.5.4   & Génération billets numériques \\
+Hébergement    & Vercel         & Latest  & Déploiement serverless, CDN mondial \\
+\bottomrule
+\end{tabular}
+\caption{Stack technique — Lumière Cinémas (Partie Entrepreneuriat)}
+\end{table}
+
+\subsection{Valeur ajoutée et avantage concurrentiel}
+
+Lumière Cinémas se distingue par plusieurs avantages clés : premier tunnel de réservation complet en 6 étapes sans équivalent marocain ; architecture SSR (Next.js 15) garantissant des temps de chargement rapides sur connexions 4G ; sécurité des données conforme à la loi~09-08 (RLS Supabase, JWT) ; design premium différenciant (thème sombre, accent rouge \texttt{\#E50914}) créant une rupture forte avec les interfaces marocaines existantes.
+
+%% ── 11.3 ──────────────────────────────────────────────────────
+\section{Origine et Génération de l'Idée Entrepreneuriale}
+
+\subsection{Observation fondatrice}
+
+L'idée de Lumière Cinémas est née d'une observation directe et répétée lors de sorties cinéma dans les complexes casablancais (Megarama Casablanca Mall, Colisée Boulvard) : une file d'attente de 25~minutes pour acheter un billet alors que des dizaines de spectateurs tiennent un smartphone connecté dans la main illustre parfaitement le décalage entre les usages numériques marocains et les services proposés par l'industrie cinématographique locale.
+
+\subsection{Opportunité de marché identifiée}
+
+L'analyse du marché a confirmé l'opportunité : un segment de jeunes urbains marocains de 18 à 35~ans, hyper-connectés, familiers des applications comme Glovo, Jumia Food ou Careem, exprime clairement une attente vis-à-vis d'une expérience cinéma digitale. Cette demande latente est non satisfaite par l'offre locale, créant un vide entrepreneurial exploitable. Le marché se consolide autour de grands complexes multiplex, ce qui facilite les partenariats B2B.
+
+\subsection{Inspirations du projet}
+
+Le projet s'inspire de plateformes de billetterie internationales ayant réussi leur transition numérique : \textbf{Fandango} (USA, 120~millions d'utilisateurs), \textbf{Allociné} (France, billets intégrés depuis 2017), et surtout \textbf{Yassir Events} (Algérie) qui démontre la viabilité du modèle en Afrique du Nord. L'interface s'inspire de Booking.com — tunnel court, confirmation immédiate, billet numérique — adaptée au contexte culturel et linguistique marocain.
+
+%% ── 11.4 ──────────────────────────────────────────────────────
+\section{Étude de Marché — Faisabilité Commerciale}
+
+\subsection{A. Analyse de la Demande}
+
+\textbf{Profil des futurs clients.}
+La clientèle cible se compose de trois profils : (1)~le \textbf{jeune urbain de 18 à 34~ans} résidant dans les grandes villes, disposant d'un smartphone et d'une carte bancaire ou d'un compte de paiement mobile ; (2)~la \textbf{famille de classe moyenne à aisée} qui sort en groupe le week-end et bénéficierait grandement d'une réservation anticipée de plusieurs sièges contigus ; (3)~l'\textbf{entreprise organisatrice} de sorties corporate ou team-building.
+
+\textbf{Comportements de consommation.}
+Un Marocain habitué du cinéma effectue en moyenne 8 à 12~visites par an en zones urbaines. Le budget moyen par visite est estimé entre 60 et 150~MAD par personne, incluant le billet et les consommations. Les séances les plus fréquentées sont le vendredi soir, le samedi après-midi et le dimanche.
+
+\textbf{Disposition à payer pour une solution digitale.}
+Les études sur des marchés comparables (Tunisie, Égypte) montrent qu'un utilisateur est prêt à payer une commission de 3 à 8~MAD par billet pour bénéficier d'une réservation en ligne fluide et sécurisée. Cette commission reste inférieure au coût perçu de la file d'attente.
+
+\subsection{B. Analyse de la Concurrence}
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllp{2.5cm}p{3cm}p{3cm}}
+\toprule
+\textbf{Concurrent} & \textbf{Type} & \textbf{Marché} & \textbf{Modèle éco.} & \textbf{Prix billets} & \textbf{Forces} & \textbf{Faiblesses} \\
+\midrule
+Cinemashi.ma      & Agrégateur programme   & Maroc        & Publicité display          & Gratuit (pas de vente) & Seule référence nationale des horaires & Aucune réservation ni sélection de siège \\
+Megarama.ma       & Site cinéma propriétaire& Maroc/France & Vente directe billets      & 50–90 MAD              & Marque forte, 3 salles Maroc           & Pas de plan de salle interactif unifié \\
+Colisée Cinémas   & Réseau de salles       & Maroc        & Vente directe billets      & 45–80 MAD              & Bien implanté Casablanca/Marrakech     & Site obsolète, pas de réservation mobile fluide \\
+IMAX Morocco      & Salle premium unique   & Maroc (Casa) & Billetterie propre         & 80–130 MAD             & Expérience premium différenciante      & Offre très restreinte, site rudimentaire \\
+Ciné Horizon (TN) & Plateforme billetterie & Tunisie      & Commission/billet + B2B    & Commission 2 TND       & Modèle mature, preuve de concept maghrébin & Hors Maroc, non adapté au contexte marocain \\
+Netflix Maroc     & VOD                    & Maroc/Monde  & Abonnement mensuel         & 40–99 MAD/mois         & 200M+ abonnés, contenus illimités      & Ne remplace pas l'expérience salle \\
+Shahid (MBC)      & VOD arabe              & Maroc/MENA   & Abonnement mensuel         & 49–79 MAD/mois         & Contenus arabes premium, très populaire& Pas de billetterie, uniquement streaming \\
+\bottomrule
+\end{tabular}}
+\caption{Analyse concurrentielle — Concurrents directs et indirects}
+\label{tab:concurrence}
+\end{table}
+
+\subsection{C. Analyse des Fournisseurs}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{%
+  >{\raggedright\arraybackslash}p{2.4cm}%
+  >{\raggedright\arraybackslash}p{3.5cm}%
+  >{\raggedright\arraybackslash}X%
+  >{\raggedright\arraybackslash}p{3.3cm}}
+\toprule
+\textbf{Fournisseur} & \textbf{Service} & \textbf{Tarif réel (2025)} & \textbf{Usage dans le projet} \\
+\midrule
+Supabase      & BDD PostgreSQL + Auth + Storage  & Free : 0 MAD. Pro : 250 MAD/mois        & Cœur de l'application \\
+Vercel        & Hébergement + CDN serverless     & Hobby : gratuit. Pro : 200 MAD/mois     & Déploiement Next.js \\
+Stripe        & Paiement carte internationale    & 1,5\,\% + 1,50 MAD/transaction          & Checkout sécurisé \\
+CMI           & Paiement cartes marocaines       & \textasciitilde{}2\,\% + 3\,000 MAD/an  & Cartes Visa/MC marocaines \\
+Twilio/Infobip& SMS notifications                & \textasciitilde{}0,85 MAD/SMS           & Confirmations réservation \\
+SendGrid      & Emails transactionnels           & Free~: 100 emails/j. Essentials~: 150 MAD/mois & Billets par email \\
+OVH Cloud     & VPS (alternative souveraine)     & 65–109 MAD/mois                         & Alternative à Vercel \\
+\bottomrule
+\end{tabularx}
+\caption{Analyse des fournisseurs — Lumière Cinémas}
+\label{tab:fournisseurs}
+\end{table}
+
+\noindent Le projet dépend principalement de \textbf{Supabase} et \textbf{Stripe} pour ses fonctions critiques. Des alternatives existent (AWS RDS + CMI) mais impliquent une migration significative. Le risque fournisseur est modéré grâce aux standards ouverts (PostgreSQL) utilisés.
+
+\subsection{D. Cadre Légal et Réglementaire au Maroc}
+
+\begin{itemize}
+  \item \textbf{Loi 09-08 (Protection des données personnelles)} : exige la déclaration préalable auprès de la CNDP de tout traitement de données personnelles (nom, email, historique d'achats). Frais de dossier : 1\,000 à 2\,000 MAD.
+  \item \textbf{Loi 53-05 (Commerce électronique)} : encadre les transactions en ligne. Obligation d'afficher les CGV, la politique de remboursement et les informations légales.
+  \item \textbf{Obligations fiscales :} TVA au taux de 20\,\% sur les commissions et services numériques. Impôt sur les Sociétés (IS) au taux de 20\,\% sur les bénéfices nets inférieurs à 1~million de MAD.
+  \item \textbf{OMPIC (Propriété intellectuelle) :} dépôt de la marque « Lumière Cinémas » fortement recommandé — coût : 2\,025~MAD pour la classe 41 (services de divertissement).
+  \item \textbf{Registre de commerce :} obligatoire, obtenu auprès du Tribunal de Commerce (\textasciitilde{}350 MAD).
+\end{itemize}
+
+Les réglementations du secteur représentent une contrainte gérable, non rédhibitoire. Les autorisations requises (CNDP, CMI) sont accessibles à un coût raisonnable.
+
+\subsection{E. Outils d'Analyse Stratégique}
+
+\subsubsection{Matrice SWOT}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|X|X|}
+\hline
+\cellcolor{green!20}\textbf{FORCES (Strengths)} & \cellcolor{red!15}\textbf{FAIBLESSES (Weaknesses)} \\
+\hline
+Architecture technique moderne (Next.js 15 SSR, TypeScript). Tunnel de réservation complet en 6 étapes sans équivalent marocain. Plan de salle interactif 3 catégories (Standard / Premium / Duo). Intégration Stripe Checkout sécurisée. Back-office admin complet (CRUD + KPIs). Design premium différenciant (thème sombre, QR code). Sécurité robuste : RLS Supabase, JWT, Row Level Security. Coût d'infrastructure faible au démarrage.
+&
+Pas encore d'application mobile native (iOS/Android). Dépendance à Stripe — intégration CMI à compléter. Interface non disponible en arabe ni darija. Notoriété nulle au lancement. Équipe réduite. SMS et email transactionnels non encore branchés en production. \\
+\hline
+\cellcolor{blue!15}\textbf{OPPORTUNITÉS (Opportunities)} & \cellcolor{orange!15}\textbf{MENACES (Threats)} \\
+\hline
+Marché marocain non adressé sur le segment billetterie complète. Croissance du e-commerce marocain : +23\,\%/an (CMI 2023). Taux pénétration smartphone $>$ 89\,\% (ANRT 2024). Consolidation autour de grands réseaux (Megarama, Colisée) → partenariats B2B simples. Expansion naturelle au Maghreb (Algérie, Tunisie). Événements culturels (concerts, festivals) : marché adjacent accessible.
+&
+Résistance des exploitants à partager données de billetterie. Risque de désintermédiation par un grand réseau (app propriétaire). Volatilité de la demande (crises, saison estivale). Entrée d'acteurs tech internationaux (Fever, Ticketmaster) sur le marché marocain. Risque de fraude sur les paiements en ligne (chargebacks). Évolutions réglementaires CNDP/CMI. \\
+\hline
+\end{tabularx}
+\caption{Matrice SWOT — Lumière Cinémas}
+\label{tab:swot}
+\end{table}
+
+\subsubsection{Analyse PESTEL}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXc}
+\toprule
+\textbf{Dimension} & \textbf{Facteurs applicables} & \textbf{Impact} \\
+\midrule
+Politique (P)      & Stratégie Maroc Digital 2030 (soutien à la transformation numérique). CCM actif dans la promotion du secteur. Stabilité politique favorable aux investissements. & Favorable + \\
+\midrule
+Économique (E)     & PIB marocain : 1\,303~milliards MAD (2023, HCP). Croissance 3,4\,\% prévue 2024. Classe moyenne urbaine en expansion (\textasciitilde{}7~millions). Inflation \textasciitilde{}5,7\,\% impactant le pouvoir d'achat. & Modéré $\pm$ \\
+\midrule
+Socioculturel (S)  & Population jeune : 52\,\% $<$ 30~ans (HCP 2024). Urbanisation 64\,\%. Forte consommation de contenus digitaux. Culture du cinéma ancrée dans les métropoles. Bilinguisme français/arabe. & Très favorable ++ \\
+\midrule
+Technologique (T)  & Pénétration Internet mobile : 89\,\% (ANRT 2024). Déploiement 5G lancé en 2025. Next.js 15 / Supabase : infrastructure cloud mature. Adoption paiements mobiles (M-Wallet, CIH Pay) en progression. & Très favorable ++ \\
+\midrule
+Environnemental (E)& Dématérialisation des billets : réduction du papier, impact écologique positif. Supabase et Vercel : data centers partiellement à énergie renouvelable. & Favorable + \\
+\midrule
+Légal (L)          & Loi 09-08 (CNDP). Loi 53-05 (e-commerce). TVA 20\,\% sur services numériques. IS progressif (20–35\,\%). Réglementation CMI sur paiements en ligne. Obligations OMPIC + Registre de Commerce. & Contraignant mais gérable $-$ \\
+\bottomrule
+\end{tabularx}
+\caption{Analyse PESTEL — Secteur billetterie cinéma en ligne au Maroc}
+\label{tab:pestel}
+\end{table}
+
+\subsubsection{Les 5 Forces de Porter}
+
+\begin{table}[H]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{%
+  >{\raggedright\arraybackslash}p{3.2cm}%
+  >{\centering\arraybackslash}p{1.8cm}%
+  >{\centering\arraybackslash}p{1.5cm}%
+  >{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Force} & \textbf{Intensité} & \textbf{Niveau} & \textbf{Analyse} \\
+\midrule
+Rivalité entre concurrents existants & \textcolor{green!60!black}{\textbf{FAIBLE}} & $\star\star\circ\circ\circ$ & Cinemashi.ma est le seul acteur national mais sans vente de billets. Absence de plateforme multi-cinémas. La rivalité directe est quasi-nulle sur ce segment précis. \\
+\midrule
+Menace de nouveaux entrants & \textcolor{orange}{\textbf{MODÉRÉE}} & $\star\star\star\circ\circ$ & Barrières techniques et commerciales (intégration paiement, convaincre les cinémas). Un acteur international (Fever, Ticketmaster) pourrait entrer mais n'a pas manifesté d'intérêt pour le Maroc. \\
+\midrule
+Pouvoir de négociation des fournisseurs & \textcolor{orange}{\textbf{MODÉRÉ}} & $\star\star\star\circ\circ$ & Stripe et Supabase ont peu de substituts directs de même qualité, mais des alternatives existent. Les cinémas partenaires ont un fort pouvoir car sans eux, pas de contenu. \\
+\midrule
+Pouvoir de négociation des clients & \textcolor{orange}{\textbf{MODÉRÉ}} & $\star\star\star\circ\circ$ & Les spectateurs ont l'alternative du guichet (faible switching cost). Cependant, une fois habitués, le retour au guichet est ressenti négativement. La fidélisation réduit ce risque. \\
+\midrule
+Menace des substituts & \textcolor{orange}{\textbf{MODÉRÉE}} & $\star\star\star\circ\circ$ & Netflix, Shahid, OSN+ proposent des alternatives VOD. Cependant, l'expérience salle (Dolby Atmos, IMAX) reste indépassable pour les blockbusters. L'essor des salles premium renforce l'irrempla\c{c}abilité de l'expérience physique. \\
+\bottomrule
+\end{tabularx}
+\caption{Les 5 forces de Porter — Billetterie cinéma en ligne au Maroc}
+\label{tab:porter}
+\end{table}
+
+%% ── 11.5 ──────────────────────────────────────────────────────
+\section{Marketing Stratégique}
+
+\subsection{Segmentation}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+\textbf{Critère} & \textbf{Segment 1 — Jeunes urbains} & \textbf{Segment 2 — Familles} & \textbf{Segment 3 — Entreprises} \\
+\midrule
+Âge cible        & 18–30 ans              & 30–50 ans (avec enfants)      & Responsables RH/événements \\
+Géographie       & Casablanca, Rabat, Marrakech, Tanger & Grandes villes + périphéries & Zones industrielles et centres d'affaires \\
+Revenus          & 3\,000–8\,000 MAD/mois & 6\,000–15\,000 MAD/mois       & $>$ 15\,000 MAD/mois (budget entreprise) \\
+Technologie      & Hyper-connectés, smartphones haut de gamme & Connectés, apps du quotidien & Outils B2B, email pro \\
+Fréquence cinéma & 2–4 fois/mois          & 2–4 fois/trimestre            & 1–4 fois/an (sorties d'équipe) \\
+Problème principal& Files, manque de prévisibilité, interface mobile médiocre & Complexité pour 4+ sièges contigus & Facturation, places groupées \\
+Disposition à payer & 3–6 MAD/billet comm. & 4–8 MAD/billet               & Abonnement corporate \\
+\bottomrule
+\end{tabularx}
+\caption{Segmentation du marché — Lumière Cinémas}
+\label{tab:segmentation}
+\end{table}
+
+\subsection{Ciblage}
+
+Le segment prioritaire au lancement est le \textbf{Segment~1 : jeunes urbains de 18 à 30~ans}, principalement à Casablanca et Rabat. Ce ciblage est justifié par~:
+\begin{itemize}
+  \item \textbf{Volume :} \textasciitilde{}4,2~millions d'individus dans les 5~premières villes marocaines.
+  \item \textbf{Maturité digitale :} déjà utilisateurs de services en ligne (Glovo, Jumia, booking d'hôtels), aucune éducation à l'usage requise.
+  \item \textbf{Coût d'acquisition faible :} canaux digitaux (Instagram, TikTok) avec CPC de 0,3–0,8 MAD au Maroc.
+  \item \textbf{Viralité naturelle :} partage volontaire des expériences culturelles sur les réseaux sociaux.
+\end{itemize}
+Le Segment~2 (familles) sera activé en phase~2, après acquisition des premiers cinémas partenaires. Le Segment~3 (B2B entreprises) fera l'objet d'une offre dédiée en V3. Ce segment est suffisamment rentable et présente un fort potentiel de croissance lié à l'urbanisation et à la jeunesse marocaine.
+
+\subsection{Positionnement}
+
+Lumière Cinémas se positionne comme la \textbf{première plateforme de billetterie cinéma digitale au Maroc}, combinant accessibilité, instantanéité et plaisir de l'expérience cinéma. Elle se distingue par son approche multi-cinémas, son interface premium et son tunnel de réservation fluide.
+
+\begin{infobox}[Proposition de valeur]
+\textit{« Réservez votre place de cinéma en 90~secondes, choisissez votre siège et payez en ligne — fini les files d'attente, votre billet QR code vous attend sur votre téléphone. »}
+\end{infobox}
+
+Image de marque souhaitée : \textbf{moderne, marocain, premium accessible}. Le nom « Lumière » rend hommage aux frères Lumière, inventeurs du cinéma, et s'inscrit dans la tradition culturelle franco-marocaine. L'accent rouge \texttt{\#E50914} renforce l'association au cinéma.
+
+\subsection{Stratégie Marketing Mix (4P)}
+
+\subsubsection{Produit / Service}
+
+Le produit Lumière Cinémas est une plateforme web responsive (et à terme application mobile PWA installable) offrant :
+\begin{itemize}
+  \item \textbf{Core product :} réservation de billets en ligne avec sélection de siège.
+  \item \textbf{Augmented product :} snacks commandés en ligne, billet QR code numérique, historique réservations, programme centralisé multi-cinémas.
+  \item \textbf{Différenciation UX :} plan de salle interactif avec catégories de prix visuellement distinctes, carrousel immersif, fiche film cinématographique.
+  \item \textbf{Back-office opérateur :} tableau de bord complet pour les cinémas partenaires.
+  \item \textbf{Sécurité :} authentification JWT, RLS PostgreSQL, Stripe PCI-DSS compliant.
+\end{itemize}
+
+\subsubsection{Prix}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{4.8cm}p{2.6cm}p{2.8cm}X}
+\toprule
+\textbf{Segment / Service} & \textbf{Tarif} & \textbf{Modèle} & \textbf{Justification} \\
+\midrule
+Commission spectateur — billet Standard (50–70 MAD) & 3,00 MAD/billet & Frais de service & Inférieur au coût perçu d'une file d'attente \\
+Commission spectateur — billet Premium/IMAX (80–130 MAD) & 5,00 MAD/billet & Frais de service & Proportionnel à la valeur du billet \\
+Abonnement Lumière Pass (spectateurs fréquents) & 59,00 MAD/mois & Abonnement mensuel & 0 commission sur billets + accès avant-premières \\
+Abonnement cinéma partenaire — Starter & 990 MAD/mois & SaaS B2B & 1 salle, back-office complet, analytics de base \\
+Abonnement cinéma partenaire — Pro & 2\,490 MAD/mois & SaaS B2B & Jusqu'à 8 salles, analytics avancés, support prioritaire \\
+Module Snacks — marge opérateur & 15\,\% du CA snacks & Commission & Partage de valeur sur commandes de snacks \\
+\bottomrule
+\end{tabularx}
+\caption{Grille tarifaire — Lumière Cinémas}
+\label{tab:tarifs}
+\end{table}
+
+\noindent\textbf{Stratégie recommandée au lancement : pénétration par la gratuité partielle.} Les 6 premiers mois, les commissions spectateurs sont offertes (0 MAD) pour maximiser l'acquisition utilisateur. Le modèle SaaS cinéma partenaire reste payant dès le premier jour.
+
+\subsubsection{Distribution}
+
+La distribution est \textbf{exclusivement digitale}, sans intermédiaire physique :
+\begin{itemize}
+  \item Application web responsive (desktop et mobile) accessible depuis tout navigateur.
+  \item \textbf{Progressive Web App (PWA)} : installable sur smartphone sans passer par l'App Store.
+  \item \textbf{SEO :} pages films et séances optimisées pour les recherches Google (« billet cinéma Casablanca »).
+  \item \textbf{QR code :} billets numériques scannables à l'entrée des salles.
+  \item \textbf{API ouverte (phase~2) :} widget de réservation intégrable sur les sites des cinémas partenaires.
+\end{itemize}
+
+\subsubsection{Communication}
+
+\begin{itemize}
+  \item \textbf{Instagram \& TikTok :} contenu organique (bandes-annonces, top films) + publicités ciblées (18–30~ans, Casablanca/Rabat/Marrakech). Budget publicitaire lancement : 5\,000~MAD/mois.
+  \item \textbf{Partenariats influenceurs marocains :} créateurs de contenu lifestyle/culture (200\,000 à 500\,000 abonnés).
+  \item \textbf{SEO bilingue français/darija :} optimisation pour les requêtes en français et en darija translittérée.
+  \item \textbf{Relations presse culturelle :} communiqués vers Telquel, L'Économiste, 2M, MFM Radio lors du lancement.
+  \item \textbf{Programme de parrainage :} 10~MAD de crédit offerts à l'utilisateur et à son filleul pour toute première réservation parrainée.
+  \item \textbf{Présence événementielle :} Festival National du Film de Tanger, FIFM (Marrakech).
+\end{itemize}
+
+%% ── 11.6 ──────────────────────────────────────────────────────
+\section{Étude de Faisabilité Technique}
+
+\subsection{Ressources matérielles nécessaires}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{p{4cm}cp{3.5cm}p{2.2cm}p{3.5cm}}
+\toprule
+\textbf{Matériel / Service} & \textbf{Qté} & \textbf{Coût unitaire} & \textbf{Coût mensuel} & \textbf{Usage} \\
+\midrule
+Poste développeur (MacBook Pro M3 ou PC équiv.) & 2 & 15\,000–25\,000 MAD (achat unique) & --- & Développement, tests, déploiement \\
+Vercel Pro (hébergement Next.js) & 1 & 200 MAD/mois & 200 MAD & Déploiement + CDN mondial \\
+Supabase Pro (BDD + Auth + Storage) & 1 & 250 MAD/mois & 250 MAD & BDD, auth, stockage affiches \\
+Nom de domaine (.ma ou .com) & 1 & 150–400 MAD/an & \textasciitilde{}25 MAD & Identité web \\
+SendGrid Essentials (emails) & 1 & 150 MAD/mois & 150 MAD & Billets email, notifications \\
+SMS Twilio (notifications) & 1 & \textasciitilde{}0,85 MAD/SMS & Variable & Confirmations réservation \\
+CMI — adhésion paiement cartes MA & 1 & 3\,000 MAD/an & 250 MAD & Paiement Visa/MC marocaines \\
+Logiciels (Figma, VS Code, GitHub) & 1 éq. & Gratuit / open source & 0 & Design, dev, versioning \\
+\bottomrule
+\end{tabular}
+\caption{Ressources matérielles — Lumière Cinémas}
+\label{tab:materiel}
+\end{table}
+
+\subsection{Ressources humaines}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabular}{p{4.2cm}cp{2.8cm}p{3cm}p{3.5cm}}
+\toprule
+\textbf{Profil} & \textbf{Qté} & \textbf{Salaire brut} & \textbf{Coût employeur/mois} & \textbf{Missions} \\
+\midrule
+Développeur Fullstack Senior (Next.js, Supabase, TS) & 1 & 12\,000 MAD & 14\,878 MAD & Maintenance, évolutions, sécurité, déploiement \\
+Développeur Fullstack Junior / Alternant & 1 & 5\,000 MAD & 6\,199 MAD & Support dev, tests, intégrations API \\
+Designer UI/UX & 1 & 7\,000 MAD & 8\,679 MAD & Maquettes, identité visuelle, UX mobile \\
+Chargé(e) de Marketing Digital & 1 & 6\,000 MAD & 7\,439 MAD & Réseaux sociaux, SEO, campagnes \\
+Account Manager Cinémas (B2B) & 1 & 7\,000 MAD + comm. & 8\,679 MAD & Prospection, onboarding, support \\
+Comptable (prestataire ext.) & 1 & 1\,500 MAD/mois (forfait) & 1\,500 MAD & Déclarations fiscales, paie, TVA \\
+\midrule
+\multicolumn{3}{r}{\textbf{Masse salariale totale employeur mensuelle}} & \multicolumn{2}{l}{\textbf{47\,374 MAD}} \\
+\bottomrule
+\end{tabular}
+\caption{Ressources humaines — Équipe initiale Lumière Cinémas}
+\label{tab:rh}
+\end{table}
+
+\noindent\textit{Les salaires sont conformes au marché marocain 2025-2026 (source : Cabinet Michael Page Maroc, Bayt.com Maroc). La CNSS patronale est estimée à \textasciitilde{}23,98\,\% du salaire brut.}
+
+%% ── 11.7 ──────────────────────────────────────────────────────
+\section{Étude de Faisabilité Financière}
+
+\subsection{Investissement Initial}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{%
+  >{\raggedright\arraybackslash}p{5.2cm}%
+  >{\raggedright\arraybackslash}X%
+  r}
+\toprule
+\textbf{Élément d'investissement} & \textbf{Détail} & \textbf{Coût (MAD)} \\
+\midrule
+Développement initial (MVP) & 3 mois de dev senior externalisé & 30\,000 \\
+Design UI/UX — identité visuelle et maquettes & Charte graphique, logotype, Figma & 8\,000 \\
+Constitution juridique SARL & Frais notaire + registre de commerce + IF + publications & 3\,500 \\
+Dépôt marque OMPIC (classe~41) & Protection marque « Lumière Cinémas » & 2\,025 \\
+Déclaration CNDP (loi~09-08) & Dossier traitement données personnelles & 1\,500 \\
+Infrastructure technique initiale (3~mois) & Vercel Pro + Supabase Pro × 3 & 1\,950 \\
+Intégration CMI — adhésion paiement & Frais d'adhésion annuels CMI & 3\,000 \\
+Budget marketing lancement (3~mois) & Publicités Instagram/TikTok 5\,000 MAD/mois × 3 & 15\,000 \\
+Matériel informatique (2~postes) & 2 ordinateurs portables développeurs & 20\,000 \\
+Fonds de roulement de précaution (2~mois) & Réserve pour couvrir 2~mois de charges fixes & 30\,000 \\
+\midrule
+\multicolumn{2}{r}{\textbf{TOTAL INVESTISSEMENT INITIAL}} & \textbf{115\,975 MAD} \\
+\bottomrule
+\end{tabularx}
+\caption{Investissement initial — Lumière Cinémas}
+\label{tab:invest}
+\end{table}
+
+\subsection{Prévisions de Chiffre d'Affaires Mensuel}
+
+Hypothèses conservatrices basées sur un lancement à Casablanca avec 2 cinémas partenaires (\textasciitilde{}8 salles) à partir du mois M+4 post-création.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Source de revenus} & \textbf{Mois 3} & \textbf{Mois 6} & \textbf{Mois 9} & \textbf{Mois 12} \\
+\midrule
+Billets vendus (nombre/mois)            & 0         & 1\,200    & 3\,500     & 7\,000 \\
+Commission moyenne/billet (MAD)         & 0 (gratuit)& 3,50     & 3,50       & 4,00 \\
+CA commissions billets (MAD)            & 0         & 4\,200    & 12\,250    & 28\,000 \\
+Abonnements cinémas partenaires (MAD)   & 990       & 1\,980    & 4\,980     & 7\,470 \\
+Abonnements Lumière Pass spectateurs    & 0         & 1\,770    & 4\,720     & 8\,850 \\
+CA Snacks (commission 15\,\%)           & 0         & 600       & 1\,800     & 3\,600 \\
+\midrule
+\textbf{CA TOTAL MENSUEL (MAD)}         & \textbf{990} & \textbf{8\,550} & \textbf{23\,750} & \textbf{47\,920} \\
+\bottomrule
+\end{tabular}
+\caption{Prévisions de chiffre d'affaires mensuel}
+\label{tab:ca}
+\end{table}
+
+\subsection{Charges Variables Mensuelles}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{4.8cm}Xrr}
+\toprule
+\textbf{Charge variable} & \textbf{Base de calcul} & \textbf{Mois 6 (MAD)} & \textbf{Mois 12 (MAD)} \\
+\midrule
+Commission Stripe (1,5\,\% + 1,50 MAD/billet)  & 1\,200 billets × 60 MAD moy. & 1\,980 & 4\,200 \\
+Commission CMI (2\,\%)                          & Paiements cartes marocaines  & 600    & 1\,400 \\
+SMS Twilio (0,85 MAD/SMS)                       & 1\,200 SMS/mois              & 1\,020 & 2\,975 \\
+SendGrid emails                                 & $<$50\,000 emails/mois       & 150    & 150    \\
+Publicité digitale variable                     & CPC Instagram/TikTok         & 3\,000 & 5\,000 \\
+\midrule
+\multicolumn{2}{l}{\textbf{TOTAL CHARGES VARIABLES (MAD)}} & \textbf{6\,750} & \textbf{13\,725} \\
+\bottomrule
+\end{tabularx}
+\caption{Charges variables mensuelles}
+\label{tab:cv}
+\end{table}
+
+\subsection{Charges Fixes Mensuelles}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Charge fixe} & \textbf{Montant mensuel (MAD)} \\
+\midrule
+Masse salariale totale (coût employeur — 5 salariés + 1 prestataire) & 47\,374 \\
+Hébergement Vercel Pro                              & 200 \\
+Supabase Pro                                        & 250 \\
+Domaine + SSL                                       & 25 \\
+SendGrid Essentials                                 & 150 \\
+CMI — amortissement adhésion annuelle               & 250 \\
+Comptable (prestataire)                             & 1\,500 \\
+Loyer bureau partagé (coworking, optionnel)         & 2\,000 \\
+Amortissement matériel informatique (24~mois)       & 833 \\
+Divers (téléphone, transports, frais bancaires)     & 500 \\
+\midrule
+\textbf{TOTAL CHARGES FIXES MENSUELLES (MAD)}       & \textbf{53\,082} \\
+\bottomrule
+\end{tabular}
+\caption{Charges fixes mensuelles}
+\label{tab:cf}
+\end{table}
+
+\subsection{Calcul du Coût Total}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Élément} & \textbf{Montant (MAD) — Mois 12} \\
+\midrule
+Total charges variables & 13\,725 \\
+Total charges fixes     & 53\,082 \\
+\midrule
+\textbf{COÛT TOTAL}     & \textbf{66\,807} \\
+\bottomrule
+\end{tabular}
+\caption{Coût total mensuel — Mois 12}
+\label{tab:cout_total}
+\end{table}
+
+\subsection{Résultat Prévisionnel}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Élément} & \textbf{Montant (MAD) — Mois 12} \\
+\midrule
+Chiffre d'affaires & 47\,920 \\
+Coût total         & 66\,807 \\
+\midrule
+\textbf{RÉSULTAT PRÉVISIONNEL} & \textbf{$-$18\,887} \\
+\bottomrule
+\end{tabular}
+\caption{Résultat prévisionnel — Mois 12 (phase d'investissement planifiée)}
+\label{tab:resultat}
+\end{table}
+
+\noindent\textit{Note : le résultat négatif de $-$18\,887 MAD au mois~12 est attendu et planifié — il correspond à la phase d'investissement de la startup. L'apport initial de 300\,000 MAD couvre largement ce déficit cumulé.}
+
+\subsection{Marge}
+
+\noindent\textbf{Marge brute} = CA $-$ Charges variables = 47\,920 $-$ 13\,725 = \textbf{34\,195 MAD}
+
+\noindent\textbf{Taux de marge} = (34\,195 $\div$ 47\,920) $\times$ 100 = \textbf{71,4\,\%}
+
+\subsection{Seuil de Rentabilité}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Élément} & \textbf{Résultat (Mois 12)} \\
+\midrule
+Charges fixes mensuelles          & 53\,082 MAD \\
+Taux de marge sur coût variable   & 71,4\,\% \\
+\textbf{Seuil de rentabilité}     & \textbf{53\,082 $\div$ 71,4\,\% = 74\,344 MAD de CA/mois} \\
+Nombre de billets nécessaires     & \textasciitilde{}9\,800 billets/mois \\
+Mois estimé d'atteinte du seuil   & Mois 14–16 (\textasciitilde{}15 mois après lancement) \\
+\bottomrule
+\end{tabular}
+\caption{Seuil de rentabilité — Lumière Cinémas}
+\label{tab:seuil}
+\end{table}
+
+\subsection{Besoin en Fonds de Roulement (BFR)}
+
+Dans un modèle de billetterie numérique, le BFR est structurellement faible~: Stocks = 0~MAD (service numérique), créances clients faibles (paiement immédiat en ligne), dettes fournisseurs via Stripe (reversement sous 2–7 jours ouvrés).
+
+\[ \text{BFR} = \text{Créances clients} - \text{Dettes fournisseurs} \]
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lr}
+\toprule
+\textbf{Élément} & \textbf{Montant (MAD) — Mois 12} \\
+\midrule
+Stocks                          & 0 \\
+Créances clients (5 j × CA/30) & 7\,987 \\
+Dettes fournisseurs (7 j × CV/30) & 3\,202 \\
+\midrule
+\textbf{BFR}                   & \textbf{4\,785 MAD} \\
+\bottomrule
+\end{tabular}
+\caption{Besoin en fonds de roulement (BFR)}
+\label{tab:bfr}
+\end{table}
+
+\noindent Le BFR est très bas ($<$ 5\,000~MAD à maturité), caractéristique favorable du modèle SaaS/marketplace digital.
+
+\subsection{Trésorerie Prévisionnelle sur 6 Mois}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Mois} & \textbf{CA (MAD)} & \textbf{Charges Var.} & \textbf{Charges Fixes} & \textbf{Résultat mensuel} \\
+\midrule
+M1 (pré-lancement) & 0     & 500    & 53\,082 & $-$53\,582 \\
+M2                 & 500   & 1\,000 & 53\,082 & $-$53\,582 \\
+M3                 & 990   & 1\,500 & 53\,082 & $-$53\,592 \\
+M4                 & 3\,200& 3\,200 & 53\,082 & $-$53\,082 \\
+M5                 & 6\,000& 5\,000 & 53\,082 & $-$52\,082 \\
+M6                 & 8\,550& 6\,750 & 53\,082 & $-$51\,282 \\
+\bottomrule
+\end{tabular}
+\caption{Trésorerie prévisionnelle — 6 premiers mois}
+\label{tab:tresorerie}
+\end{table}
+
+\begin{warningbox}[Analyse financière]
+\textbf{Rentabilité :} le projet atteint son seuil de rentabilité au mois~14–16, cohérent avec les standards des startups SaaS.
+\textbf{BFR maîtrisé :} $<$~5\,000 MAD à maturité, grâce au paiement immédiat en ligne.
+\textbf{Risques financiers :} (1)~lenteur à convaincre les premiers cinémas partenaires ; (2)~masse salariale élevée (89\,\% des charges fixes) ; (3)~dépendance au volume de billets.
+Un financement total de \textbf{250\,000 à 300\,000 MAD} est recommandé pour assurer la trésorerie jusqu'au seuil de rentabilité.
+\end{warningbox}
+
+%% ── 11.8 ──────────────────────────────────────────────────────
+\section{Aspect Juridique}
+
+\subsection{Forme juridique retenue : SARL}
+
+Lumière Cinémas sera constituée sous la forme d'une \textbf{Société à Responsabilité Limitée (SARL)}, régie par la loi n°~5-96 sur les sociétés commerciales, telle que modifiée par la loi~21-05.
+
+Capital minimum légal : 10\,000~MAD. Le capital social envisagé est de \textbf{100\,000~MAD}, partagé entre les associés fondateurs, afin de crédibiliser la société vis-à-vis des partenaires cinémas et des institutions financières. Ce capital social est complété par des apports en compte courant d'associés et/ou un financement externe pour couvrir le besoin global d'environ \textbf{300\,000~MAD} (investissement initial de 115\,975~MAD + trésorerie jusqu'à l'atteinte du seuil de rentabilité, vers le mois~14--16).
+
+\subsection{Démarches de Création}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{Xp{3.8cm}p{1.8cm}r}
+\toprule
+\textbf{Étape} & \textbf{Organisme} & \textbf{Délai} & \textbf{Coût (MAD)} \\
+\midrule
+Certificat négatif (vérification du nom)       & OMPIC (en ligne)               & 24–48h  & 230 \\
+Rédaction des statuts et légalisation          & Notaire ou avocat              & 3–5 j   & 1\,500–3\,000 \\
+Enregistrement (droits d'enregistrement)       & Direction des Impôts           & 1–3 j   & 1\,000–2\,000 \\
+Inscription au Registre de Commerce            & Tribunal de Commerce           & 2–5 j   & 350 \\
+Publication BO et journal d'annonces légales   & BO + journal agréé             & 5–10 j  & 1\,500–2\,000 \\
+Identifiant Fiscal (IF)                        & Direction Régionale des Impôts & 24–48h  & Gratuit \\
+Inscription à la CNSS                          & Caisse Nationale SS            & 2–5 j   & Gratuit \\
+Patente (Taxe Professionnelle)                 & DGI                            & 5–10 j  & Variable \\
+Compte bancaire professionnel                  & Banque marocaine               & 3–5 j   & 0–500 \\
+\midrule
+\multicolumn{2}{l}{\textbf{TOTAL CRÉATION SARL}} & \textbf{\textasciitilde{}20–30 j} & \textbf{\textasciitilde{}5\,000–8\,000} \\
+\bottomrule
+\end{tabularx}
+\caption{Démarches de création SARL au Maroc}
+\label{tab:sarl_creation}
+\end{table}
+
+\subsection{Justification du Choix SARL}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{Xp{3.2cm}p{3.2cm}p{3.5cm}}
+\toprule
+\textbf{Critère} & \textbf{SARL} & \textbf{Auto-entrepreneur} & \textbf{Société Anonyme (SA)} \\
+\midrule
+Capital minimum      & 10\,000 MAD          & Aucun                      & 300\,000 MAD \\
+Responsabilité       & Limitée aux apports  & Illimitée sur biens propres& Limitée aux apports \\
+Nombre d'associés    & 1 à 50               & 1 (seul)                   & 5 minimum \\
+Ouverture du capital & Non (sans transfo.)  & Non                        & Oui (actions) \\
+Charges sociales     & CNSS \textasciitilde{}23,98\,\% & Forfait \textasciitilde{}10–12\,\% & Idem SARL \\
+Crédibilité B2B      & Forte                & Faible                     & Très forte \\
+Complexité admin.    & Modérée              & Simple                     & Complexe \\
+\textbf{Recommandé pour} & \textbf{$\checkmark$ CE PROJET} & Activité solo simple & Levée de fonds $>$ 5M MAD \\
+\bottomrule
+\end{tabularx}
+\caption{Comparatif SARL vs autres formes juridiques}
+\label{tab:formes_juridiques}
+\end{table}
+
+La SARL offre la protection de la responsabilité limitée, une crédibilité suffisante pour les négociations B2B avec les cinémas, une gestion administrative raisonnable, et la possibilité d'accueillir des investisseurs via une augmentation de capital ou une transformation en SA le moment venu.
+
+%% ── 11.9 ──────────────────────────────────────────────────────
+\section{Stratégie de Développement}
+
+\subsection{Roadmap Produit}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{p{2.8cm}p{1.8cm}p{2.4cm}Xp{2.4cm}}
+\toprule
+\textbf{Phase} & \textbf{Horizon} & \textbf{Géographie} & \textbf{Fonctionnalités clés} & \textbf{CA cible/mois} \\
+\midrule
+V1 — MVP Casablanca & M0 → M12 & Casablanca (2 cinémas) & Tunnel complet, back-office, Stripe, QR code, programme centralisé. Interface responsive. Arabe à intégrer. & 8\,000–15\,000 MAD \\
+\midrule
+V2 — Extension nationale + Mobile & M12 → M24 & Casa, Rabat, Marrakech, Tanger, Agadir & App React Native (iOS + Android). Géolocalisation, notifications push, programme multi-villes, intégration CMI. & 40\,000–80\,000 MAD \\
+\midrule
+V3 — Événements + B2B & M24 → M48 & National & Extension concerts, théâtre, festivals. Module corporate. API ouverte. Analytics avancés + ML. & 150\,000–300\,000 MAD \\
+\midrule
+V4 — Maghreb & M36 → M60 & Algérie, Tunisie (pilote) & Adaptation devise (DZD, TND), arabe natif, partenariats locaux, multi-tenant Supabase. & 500\,000+ MAD \\
+\bottomrule
+\end{tabularx}
+\caption{Roadmap produit Lumière Cinémas — 4 phases}
+\label{tab:roadmap}
+\end{table}
+
+\subsection{Indicateurs Clés de Performance (KPIs)}
+
+\begin{itemize}
+  \item \textbf{GMV} (\textit{Gross Merchandise Value}) : valeur totale des billets vendus via la plateforme.
+  \item \textbf{Billets vendus/mois} par cinéma partenaire.
+  \item \textbf{Taux de conversion :} visiteurs uniques → réservations confirmées (cible : $>$ 3,5\,\%).
+  \item \textbf{CAC} (\textit{Coût d'Acquisition Client}) : budget marketing ÷ nouveaux utilisateurs actifs (cible : $<$ 15 MAD).
+  \item \textbf{LTV} (\textit{Lifetime Value}) : CA moyen par utilisateur sur 12~mois (cible : $>$ 200 MAD).
+  \item \textbf{NPS} (\textit{Net Promoter Score}) : mesure de satisfaction et propension à recommander.
+  \item \textbf{Taux de rétention à 30 jours :} \% d'utilisateurs revenant pour une 2\textsuperscript{ème} réservation (cible : $>$ 35\,\%).
+  \item \textbf{Churn rate B2B :} taux de résiliation des abonnements cinémas partenaires (cible : $<$ 5\,\%/mois).
+\end{itemize}
+
+\subsection{Perspectives d'Internationalisation}
+
+Le Maghreb représente un marché naturel d'expansion, avec une langue, une culture et des problématiques communes au Maroc. L'\textbf{Algérie} (45~millions d'habitants, renaissance récente du cinéma) offre un potentiel considérable malgré les barrières réglementaires. La \textbf{Tunisie}, plus petite mais avec un tissu cinématographique plus mature (Festival de Carthage, réseau Cine Cities), constitue un marché test idéal. L'architecture technique de Lumière Cinémas (Supabase multi-tenant, Next.js i18n, Stripe multi-devises) a été pensée pour faciliter cette extension sans refonte majeure du code.
+
+\bigskip
+\noindent\textbf{Conclusion de la partie entrepreneuriale :} Lumière Cinémas répond à un besoin réel et non adressé sur le marché marocain. L'étude démontre la viabilité du modèle avec un seuil de rentabilité atteignable en 14 à 16~mois, un BFR structurellement faible et une roadmap claire en 4~phases permettant d'adresser progressivement le marché national puis maghrébin. La structure SARL offre le bon équilibre entre protection, crédibilité et flexibilité pour cette phase d'amorçage.
+
+%% ── CONCLUSION ───────────────────────────────────────────────
+\chapter*{Conclusion Générale}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+
+Le projet Lumière Cinémas a permis de concevoir et de développer une application web de réservation de cinéma complète, intégrant une vitrine publique, un tunnel de réservation guidé en 6 étapes, un système de paiement en ligne par carte bancaire, et un back-office administrateur sécurisé.
+
+L'utilisation de Next.js 15 avec l'App Router et les Server Actions a permis de maintenir une séparation stricte entre le code serveur et le code client, garantissant la sécurité des clés d'API et la cohérence des données. L'intégration de Supabase comme backend-as-a-service et de Stripe pour le paiement a considérablement accéléré le développement tout en assurant un niveau de robustesse production.
+
+Le composant \texttt{SeatPicker}, pièce maîtresse de l'application, démontre la capacité à concevoir des interfaces interactives complexes tout en maintenant la cohérence avec les données serveur en temps réel.
+
+Ce projet constitue une base solide et extensible pour une application de billetterie professionnelle, prête à accueillir les évolutions décrites dans les perspectives futures.
+
+%% ── ANNEXES ──────────────────────────────────────────────────
+\appendix
+
+\chapter{Structure Complète du Projet}
+
+\begin{lstlisting}[language={}]
+lumiere-cinemas/
++-- app/
+|   +-- page.tsx                    (accueil + HeroCarousel)
+|   +-- layout.tsx                  (layout global)
+|   +-- not-found.tsx / error.tsx / loading.tsx
+|   +-- robots.ts / sitemap.ts      (SEO)
+|   +-- films/[id]/page.tsx         (fiche film + seances)
+|   +-- seances/[id]/
+|   |   +-- page.tsx                (SeatPicker)
+|   |   \-- actions.ts              (pickSeats Server Action)
+|   +-- snacks/
+|   |   +-- page.tsx
+|   |   \-- actions.ts
+|   +-- pay/
+|   |   +-- page.tsx                (recapitulatif + paiement)
+|   |   +-- actions.ts              (Stripe + cash Server Actions)
+|   |   \-- success/page.tsx        (verification paiement Stripe)
+|   +-- confirm/[id]/page.tsx       (billet de confirmation)
+|   +-- mes-reservations/page.tsx
+|   +-- account/page.tsx + actions.ts
+|   +-- login/page.tsx
+|   +-- signup/page.tsx
+|   +-- programme/page.tsx
+|   +-- prochainement/page.tsx
+|   +-- salles/page.tsx
+|   +-- auth/actions.ts             (login/signup/logout)
+|   +-- auth/logout/route.ts
+|   +-- api/films/[id]/route.ts     (API REST film)
+|   +-- api/chat/route.ts           (endpoint RAG chatbot Groq)
+|   \-- dashboard/
+|       +-- layout.tsx              (protection admin)
+|       +-- page.tsx                (vue d'ensemble + KPIs)
+|       +-- films/                  (CRUD films)
+|       +-- seances/                (CRUD seances)
+|       +-- salles/                 (CRUD salles)
+|       +-- snacks/                 (CRUD snacks)
+|       +-- reservations/page.tsx
+|       \-- utilisateurs/
++-- components/
+|   +-- HeroCarousel.tsx
+|   +-- SeatPicker.tsx
+|   +-- Stepper.tsx
+|   +-- ScreeningsList.tsx
+|   +-- ScreeningForm.tsx
+|   +-- FilmForm.tsx
+|   +-- SnacksForm.tsx
+|   +-- SnackForm.tsx
+|   +-- RoomForm.tsx
+|   +-- PayForm.tsx
+|   +-- DeleteButton.tsx
+|   +-- DashNav.tsx
+|   +-- FilmsGrid.tsx
+|   +-- ChatBubble.tsx              (chatbot RAG flottant)
+|   +-- Header.tsx
+|   \-- PosterBg.tsx
++-- lib/
+|   +-- types.ts                    (Film, Screening, Snack, Seat, Reservation)
+|   +-- booking.ts                  (getDraft / setDraft / clearDraft)
+|   +-- seatmap.ts                  (buildSeatMap, formatDate, formatTime)
+|   +-- rag.ts                      (retrieval TF-IDF + prompt RAG)
+|   +-- knowledge.ts                (base de connaissances chatbot)
+|   \-- supabase/
+|       +-- client.ts               (client-side Supabase)
+|       \-- server.ts               (server-side Supabase SSR)
++-- supabase/
+|   \-- schema.sql                  (schema + triggers + RLS)
++-- .env.local
++-- next.config.ts
++-- tsconfig.json
+\-- package.json
+\end{lstlisting}
+
+\chapter{Ressources et Références}
+
+\begin{enumerate}
+  \item Next.js 15 Documentation : \url{https://nextjs.org/docs}
+  \item React 19 Documentation : \url{https://react.dev}
+  \item Supabase Documentation : \url{https://supabase.com/docs}
+  \item Supabase Auth avec Next.js SSR : \url{https://supabase.com/docs/guides/auth/server-side/nextjs}
+  \item Stripe Checkout Documentation : \url{https://stripe.com/docs/payments/checkout}
+  \item TypeScript Documentation : \url{https://www.typescriptlang.org/docs}
+  \item 21st.dev — Bibliothèque de composants UI React/Next.js : \url{https://21st.dev}
+  \item Anthropic, \textit{Claude} (modèle Sonnet 4.6) — Assistant IA utilisé comme aide au développement et à la rédaction technique, \url{https://claude.ai} (consulté en juin 2026).
+  \item Google DeepMind, \textit{Gemini} — Assistant IA utilisé comme aide à la recherche et à la résolution de problèmes techniques, \url{https://gemini.google.com} (consulté en juin 2026).
+\end{enumerate}
+
+%% ── Fin du document ──────────────────────────────────────────
+\end{document}

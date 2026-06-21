@@ -1,0 +1,1128 @@
+%% ============================================================
+%%  CAHIER DES CHARGES — Lumière Cinémas
+%%  Application Web de Réservation de Cinéma
+%%  Auteur : Wassim Lazim
+%%  Type   : Cahier des charges logique (fonctionnel)
+%%  IMPORTANT : Compiler avec XeLaTeX (même réglage que rapport.tex)
+%% ============================================================
+\documentclass[12pt,a4paper,openany]{report}
+
+%% ── Packages ─────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=blue, urlcolor=blue, citecolor=blue}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{caption}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{needspace}
+\usepackage{amssymb}
+\usepackage{colortbl}
+\usepackage{multirow}
+
+%% Espacement
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+\frenchspacing
+
+%% Titres
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\raggedright}
+  {\chaptertitlename\ \thechapter}{16pt}{\Huge\raggedright}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\raggedright}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\raggedright}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\raggedright}{\thesubsubsection}{1em}{}
+
+%% En-têtes
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Lumière Cinémas — CDC}
+\lhead{\small \rightmark}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+
+%% Boîtes colorées
+\tcbuselibrary{skins,breakable}
+\newtcolorbox{reqbox}[2][]{
+  colback=blue!5, colframe=blue!50,
+  title={\textbf{#2}}, fonttitle=\small\bfseries,
+  breakable, #1
+}
+\newtcolorbox{notebox}[1][]{
+  colback=orange!5, colframe=orange!60,
+  fonttitle=\bfseries, breakable, #1
+}
+\newtcolorbox{critbox}[1][]{
+  colback=red!5, colframe=red!60,
+  fonttitle=\bfseries, breakable, #1
+}
+
+%% ============================================================
+\begin{document}
+
+%% ── Page de titre ────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+
+  \includegraphics[width=0.28\textwidth]{logo.png}\\[1.5cm]
+
+  {\Huge\bfseries\textcolor{blue}{Lumière Cinémas}}\\[0.6cm]
+  {\Large Application Web de Réservation de Cinéma}\\[0.4cm]
+  {\large\textbf{Cahier des Charges Logique}}\\[3cm]
+
+  \begin{tabular}{rl}
+    \toprule
+    \textbf{Document}       & Cahier des Charges Logique (CdCL) \\
+    \textbf{Version}        & 1.0 \\
+    \textbf{Statut}         & Validé \\
+    \textbf{Date}           & \today \\
+    \bottomrule
+  \end{tabular}
+
+  \vfill
+
+  \begin{tabular}{rl}
+    \toprule
+    \textbf{Étudiants}    & Wassim Lazim \\
+                          & Marwan Saadouni \\
+                          & Kamal Chaafie \\
+    \textbf{Encadrante}   & NAJI Zineb \\
+    \textbf{Type}         & Projet de Fin d'Année (PFA) \\
+    \textbf{Établissement}& École Marocaine des Sciences de l'Ingénieur \\
+    \bottomrule
+  \end{tabular}
+
+  \vfill
+  \vspace{1.5cm}
+\end{titlepage}
+
+%% ── Tables ───────────────────────────────────────────────────
+\newpage
+\tableofcontents
+\newpage
+\listoftables
+
+%% ── Historique des révisions ─────────────────────────────────
+\newpage
+\chapter*{Historique des Révisions}
+\addcontentsline{toc}{chapter}{Historique des Révisions}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llll}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Auteur} & \textbf{Modifications} \\
+\midrule
+0.1 & 01/05/2026 & Kamal Chaafie  & Création du document, structure initiale \\
+0.2 & 07/05/2026 & Wassim Lazim   & Besoins fonctionnels BF-01 à BF-10 \\
+0.3 & 12/05/2026 & Marwan Saadouni& Architecture cible, modèle de données \\
+0.4 & 20/05/2026 & Kamal Chaafie  & Besoins non-fonctionnels, sécurité \\
+1.0 & 28/05/2026 & Wassim Lazim   & Version finale validée — soutenance \\
+\bottomrule
+\end{tabular}
+\caption{Historique des révisions du cahier des charges}
+\end{table}
+
+%% ============================================================
+\newpage
+
+%% ── CHAPITRE 1 ───────────────────────────────────────────────
+\chapter{Objet et Périmètre du Document}
+
+\section{Objet}
+
+Le présent document constitue le \textbf{cahier des charges logique (CdCL)} du projet \textbf{Lumière Cinémas}, une application web fullstack de réservation de billets de cinéma. Il définit l'ensemble des besoins fonctionnels et non-fonctionnels auxquels la solution doit répondre, les contraintes techniques à respecter, et les critères d'acceptation permettant de valider la conformité de la solution livrée.
+
+Ce document s'adresse à :
+\begin{itemize}
+  \item L'\textbf{équipe de développement} comme référence contractuelle des fonctionnalités à implémenter.
+  \item L'\textbf{encadrante} comme base d'évaluation du projet.
+  \item Les futurs \textbf{utilisateurs et opérateurs} comme engagement sur les fonctionnalités offertes.
+\end{itemize}
+
+\section{Périmètre}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Élément} & \textbf{Définition} \\
+\midrule
+Inclus & Application web de réservation de billets de cinéma (vitrine publique + tunnel de réservation + espace utilisateur + back-office administrateur) \\
+Inclus & Intégration de paiement en ligne par carte bancaire (Stripe Checkout) \\
+Inclus & Génération de billets numériques avec QR code \\
+Inclus & Dashboard administrateur avec gestion CRUD et indicateurs clés \\
+Inclus & Assistant conversationnel (chatbot RAG) répondant aux questions des visiteurs \\
+Exclu  & Application mobile native iOS/Android (prévu V2) \\
+Exclu  & Système de recommandation personnalisé (prévu V3) \\
+Exclu  & Extension multi-cinémas multi-tenants (prévu V2) \\
+Exclu  & Intégration CMI (paiement cartes marocaines — prévu V2) \\
+\bottomrule
+\end{tabularx}
+\caption{Périmètre du projet Lumière Cinémas v1.0}
+\end{table}
+
+\section{Documents de Référence}
+
+\begin{itemize}
+  \item Rapport technique Lumière Cinémas — PFA 2025/2026
+  \item Documentation Next.js 15 App Router : \url{https://nextjs.org/docs}
+  \item Documentation Supabase (PostgreSQL + Auth) : \url{https://supabase.com/docs}
+  \item Documentation Stripe Checkout : \url{https://stripe.com/docs/payments/checkout}
+  \item Loi marocaine n°~09-08 relative à la protection des données personnelles
+  \item Loi marocaine n°~53-05 relative à l'échange électronique de données juridiques
+\end{itemize}
+
+%% ── CHAPITRE 2 ───────────────────────────────────────────────
+\chapter{Présentation Générale du Projet}
+
+\section{Contexte}
+
+L'industrie cinématographique marocaine connaît une forte croissance depuis 2018, portée par l'émergence de complexes multiplex modernes à Casablanca, Rabat, Marrakech et Tanger. Malgré cette modernisation, l'expérience de réservation reste marquée par des frictions significatives : files d'attente aux guichets, absence de sélection de siège en ligne, modes de paiement limités aux espèces, et aucune trace numérique pour le spectateur.
+
+Il n'existe au Maroc aucune plateforme offrant simultanément : programme centralisé, sélection de siège, paiement en ligne, billet QR code numérique et dashboard de gestion opérateur.
+
+\section{Description du Produit}
+
+\textbf{Lumière Cinémas} est une application web fullstack de réservation de billets de cinéma construite sur \textbf{Next.js 15 (App Router)} avec \textbf{Supabase} (PostgreSQL) comme backend et \textbf{Stripe} pour le paiement. Elle offre deux espaces distincts :
+
+\begin{enumerate}
+  \item \textbf{L'espace spectateur} : parcours de réservation complet en 6 étapes guidées (Films $\rightarrow$ Séance $\rightarrow$ Places $\rightarrow$ Snacks $\rightarrow$ Paiement $\rightarrow$ Billet), accompagné d'une vitrine publique et d'un compte personnel.
+  \item \textbf{Le back-office administrateur} : gestion complète du cinéma (films, séances, salles, snacks, réservations, utilisateurs) avec tableau de bord et indicateurs clés.
+\end{enumerate}
+
+\section{Objectifs du Projet}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\textbf{ID} & \textbf{Objectif} & \textbf{Priorité} \\
+\midrule
+OBJ-01 & Offrir aux spectateurs un tunnel de réservation fluide et complet sans rupture d'expérience & Critique \\
+OBJ-02 & Permettre la sélection de sièges sur un plan interactif avec disponibilités en temps réel & Critique \\
+OBJ-03 & Intégrer un paiement en ligne sécurisé (Stripe) et l'option espèces & Critique \\
+OBJ-04 & Générer un billet numérique unique avec QR code après confirmation & Critique \\
+OBJ-05 & Fournir un back-office complet pour la gestion opérationnelle du cinéma & Critique \\
+OBJ-06 & Garantir la sécurité des données utilisateur et des clés API (zéro exposition client) & Critique \\
+OBJ-07 & Assurer des performances acceptables sur connexions 4G marocaines (TTI $<$ 3\,s) & Important \\
+OBJ-08 & Produire un code maintenable en TypeScript avec architecture SSR documentée & Important \\
+\bottomrule
+\end{tabularx}
+\caption{Objectifs du projet Lumière Cinémas}
+\end{table}
+
+%% ── CHAPITRE 3 ───────────────────────────────────────────────
+\chapter{Acteurs et Profils Utilisateurs}
+
+\section{Identification des Acteurs}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{llXX}
+\toprule
+\textbf{Acteur} & \textbf{Type} & \textbf{Description} & \textbf{Droits} \\
+\midrule
+Visiteur & Externe & Internaute non authentifié accédant à la vitrine publique & Lecture seule (catalogue, séances) \\
+Utilisateur & Externe & Spectateur inscrit et connecté via Supabase Auth & Réservation, paiement, historique \\
+Administrateur & Interne & Membre du personnel avec rôle \texttt{admin} en base & Accès complet au back-office \\
+Stripe (système) & Externe & Passerelle de paiement ; après validation, redirige vers \texttt{/pay/success} où le statut est vérifié via l'API Stripe & Écriture réservation confirmée \\
+Supabase Auth (système) & Interne & Service d'authentification gérant les sessions JWT & Émission / révocation des tokens \\
+\bottomrule
+\end{tabularx}
+\caption{Acteurs du système Lumière Cinémas}
+\end{table}
+
+\section{Profils Utilisateurs Détaillés}
+
+\subsection{Visiteur (non authentifié)}
+
+\begin{reqbox}{Profil — Visiteur}
+\begin{itemize}[noitemsep]
+  \item Peut naviguer librement sur la vitrine : page d'accueil, catalogue de films, fiches détaillées, programme des séances.
+  \item \textbf{Ne peut pas} réserver ni payer sans s'identifier.
+  \item Si un visiteur initie une réservation, il est redirigé vers la page de connexion/inscription avant de poursuivre le tunnel.
+\end{itemize}
+\end{reqbox}
+
+\subsection{Utilisateur Connecté}
+
+\begin{reqbox}{Profil — Utilisateur connecté}
+\begin{itemize}[noitemsep]
+  \item Dispose de tous les droits du visiteur.
+  \item Peut compléter le tunnel de réservation en 6 étapes.
+  \item Peut payer par carte bancaire (Stripe) ou en espèces (paiement au guichet).
+  \item Accède à son historique de réservations dans son espace personnel (\texttt{/mes-reservations}).
+  \item Ne peut accéder à aucune page du dashboard (\texttt{/dashboard/*}).
+  \item Ne peut voir que ses propres réservations (RLS Supabase).
+\end{itemize}
+\end{reqbox}
+
+\subsection{Administrateur}
+
+\begin{reqbox}{Profil — Administrateur}
+\begin{itemize}[noitemsep]
+  \item Rôle \texttt{admin} stocké dans la table \texttt{profiles}, vérifié côté serveur à chaque requête.
+  \item Accède au dashboard protégé \texttt{/dashboard} et toutes ses sous-routes.
+  \item Dispose des opérations CRUD complètes sur : films, séances, snacks, salles.
+  \item Consulte et gère l'ensemble des réservations et utilisateurs.
+  \item Visualise les indicateurs KPIs (CA, nombre de films, séances, réservations).
+  \item Peut attribuer ou révoquer le rôle administrateur à un utilisateur.
+\end{itemize}
+\end{reqbox}
+
+%% ── CHAPITRE 4 ───────────────────────────────────────────────
+\chapter{Besoins Fonctionnels}
+
+\section{Nomenclature}
+
+Les besoins fonctionnels sont identifiés par des codes \textbf{BF-XX} (Besoin Fonctionnel). Chaque besoin est associé à un niveau de priorité selon la classification MoSCoW :
+
+\begin{itemize}[noitemsep]
+  \item \textbf{M} — \textit{Must Have} : indispensable, la solution ne peut pas être livrée sans.
+  \item \textbf{S} — \textit{Should Have} : important, à implémenter sauf contrainte majeure.
+  \item \textbf{C} — \textit{Could Have} : souhaitable, implémenté si le temps le permet.
+  \item \textbf{W} — \textit{Won't Have (v1)} : reporté à une version ultérieure.
+\end{itemize}
+
+\section{Module 1 — Vitrine Publique}
+
+\begin{longtable}{p{1cm}p{6.5cm}lp{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Description du besoin} & \textbf{Acteur} & \textbf{Priorité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-01 & Afficher la page d'accueil avec un carrousel immersif (\texttt{HeroCarousel}) présentant les films en vedette avec affiches, gradients dynamiques et lien « Voir les séances » & Visiteur & M \\[4pt]
+
+  BF-02 & Afficher une grille paginée de l'ensemble du catalogue de films (affiche, titre, durée, genre, classification) & Visiteur & M \\[4pt]
+
+  BF-03 & Afficher la fiche détaillée d'un film : synopsis, réalisateur, casting, durée, genres, bande-annonce YouTube intégrée (iframe embed), liste des séances disponibles & Visiteur & M \\[4pt]
+
+  BF-04 & Afficher le programme quotidien des séances avec filtrage par film et par date & Visiteur & M \\[4pt]
+
+  BF-05 & Afficher la page « Prochainement » listant les films annoncés non encore à l'affiche & Visiteur & S \\[4pt]
+
+  BF-06 & Afficher la page « Salles » présentant les équipements disponibles (Dolby Atmos, IMAX, 4K HDR) & Visiteur & C \\[4pt]
+
+  BF-07 & Indiquer en temps réel le nombre de places restantes pour chaque séance listée & Visiteur & M \\
+\end{longtable}
+
+\section{Module 2 — Authentification}
+
+\begin{longtable}{p{1cm}p{6.5cm}lp{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Description du besoin} & \textbf{Acteur} & \textbf{Priorité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-08 & Permettre l'inscription d'un nouvel utilisateur avec adresse email et mot de passe (Supabase Auth) avec création automatique du profil dans la table \texttt{profiles} & Visiteur & M \\[4pt]
+
+  BF-09 & Permettre la connexion d'un utilisateur existant (email + mot de passe) avec gestion de session par cookie HTTP & Visiteur & M \\[4pt]
+
+  BF-10 & Permettre la déconnexion de l'utilisateur avec invalidation de la session & Utilisateur & M \\[4pt]
+
+  BF-11 & Rediriger automatiquement tout utilisateur non authentifié tentant d'accéder au tunnel de réservation vers la page de connexion, avec conservation de l'URL cible (\texttt{?next=...}) & Visiteur & M \\[4pt]
+
+  BF-12 & Rediriger automatiquement tout utilisateur non administrateur tentant d'accéder au dashboard vers la page d'accueil & Utilisateur & M \\
+\end{longtable}
+
+\section{Module 3 — Tunnel de Réservation}
+
+\begin{longtable}{p{1cm}p{6.5cm}lp{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Description du besoin} & \textbf{Acteur} & \textbf{Priorité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-13 & Afficher un stepper visuel de navigation en 6 étapes (Films → Séance → Places → Snacks → Paiement → Billet) indiquant l'étape courante, les étapes complétées et les étapes à venir & Utilisateur & M \\[4pt]
+
+  BF-14 & Afficher le plan de salle interactif (\texttt{SeatPicker}) pour la séance sélectionnée, avec les sièges occupés désactivés, les sièges disponibles cliquables et les 3 catégories visuellement distinctes (Standard, Premium, Duo) & Utilisateur & M \\[4pt]
+
+  BF-15 & Permettre la sélection multi-sièges avec calcul du sous-total en temps réel dans le panneau latéral. Valider la sélection via la Server Action \texttt{pickSeats()} qui persiste le draft en cookie & Utilisateur & M \\[4pt]
+
+  BF-16 & Afficher le catalogue de snacks disponibles (récupéré depuis Supabase) avec quantités incrémentables et prix unitaires en MAD & Utilisateur & M \\[4pt]
+
+  BF-17 & Persister les choix (séance, sièges, snacks) dans un cookie HTTP (\texttt{lumiere\_draft}) pour traverser les étapes sans perte de données & Utilisateur & M \\[4pt]
+
+  BF-18 & Afficher la page de paiement avec récapitulatif complet (sièges + snacks + total) recalculé côté serveur & Utilisateur & M \\[4pt]
+
+  BF-19 & Proposer le paiement en ligne via Stripe Checkout (redirection vers la page Stripe hébergée, retour sur \texttt{/pay/success?session\_id=...}) & Utilisateur & M \\[4pt]
+
+  BF-20 & Proposer le paiement en espèces (création immédiate de la réservation en base avec statut \texttt{pending} et génération d'une référence \texttt{LM-AAAA-XXXX}) & Utilisateur & M \\[4pt]
+
+  BF-21 & Après confirmation de paiement Stripe, créer la réservation en base avec statut \texttt{confirmed}, générer la référence unique et rediriger vers la page billet & Utilisateur & M \\[4pt]
+
+  BF-22 & Afficher le billet numérique de confirmation : référence, film, séance, salle, liste des sièges, snacks, total, QR code unique scannable & Utilisateur & M \\[4pt]
+
+  BF-23 & Invalider et supprimer le cookie draft après confirmation de réservation & Utilisateur & M \\
+\end{longtable}
+
+\section{Module 4 — Espace Utilisateur}
+
+\begin{longtable}{p{1cm}p{6.5cm}lp{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Description du besoin} & \textbf{Acteur} & \textbf{Priorité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-24 & Afficher l'historique complet des réservations de l'utilisateur connecté (films, séances, sièges, statuts, références) & Utilisateur & M \\[4pt]
+
+  BF-25 & Afficher la page compte personnel avec les informations de l'utilisateur (email, date d'inscription) & Utilisateur & S \\
+\end{longtable}
+
+\section{Module 5 — Back-Office Administrateur}
+
+\begin{longtable}{p{1cm}p{6.5cm}lp{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Description du besoin} & \textbf{Acteur} & \textbf{Priorité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-26 & Afficher le tableau de bord avec 4 KPIs calculés en temps réel : nombre de films, de séances, de réservations confirmées, chiffre d'affaires total (en MAD) & Administrateur & M \\[4pt]
+
+  BF-27 & CRUD Films complet : liste paginée, création (avec upload d'affiche vers Supabase Storage), modification, suppression avec confirmation & Administrateur & M \\[4pt]
+
+  BF-28 & CRUD Séances complet : association film/salle, date/heure, format de projection (VOSTFR, VF, IMAX, 4K HDR), prix par catégorie de siège & Administrateur & M \\[4pt]
+
+  BF-29 & CRUD Snacks complet : nom, taille, prix, emoji, description & Administrateur & M \\[4pt]
+
+  BF-30 & Lister et consulter les 200 dernières réservations avec leurs détails (film, séance, sièges, montant, statut) & Administrateur & M \\[4pt]
+
+  BF-31 & Lister tous les utilisateurs inscrits et modifier leur rôle (\texttt{user} / \texttt{admin}) & Administrateur & M \\[4pt]
+
+  BF-32 & CRUD Salles complet : capacité totale, technologie, couleur d'accentuation & Administrateur & S \\
+\end{longtable}
+
+%% ── CHAPITRE 5 ───────────────────────────────────────────────
+\chapter{Besoins Non-Fonctionnels}
+
+\section{Nomenclature}
+
+Les besoins non-fonctionnels sont identifiés par des codes \textbf{BNF-XX}. Ils définissent les qualités attendues du système indépendamment de ses fonctionnalités.
+
+\section{Sécurité}
+
+\begin{longtable}{p{1.2cm}p{8cm}p{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Exigence} & \textbf{Mécanisme de conformité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-01 & Les clés API Supabase Service Role et Stripe Secret ne doivent jamais apparaître dans le bundle JavaScript envoyé au navigateur & Server Actions + variables \texttt{.env.local} non préfixées \texttt{NEXT\_PUBLIC\_} \\[4pt]
+
+  BNF-02 & Toutes les mutations critiques (réservation, paiement, CRUD admin) doivent transiter par des Server Actions côté serveur & Architecture Next.js 15 \texttt{'use server'} \\[4pt]
+
+  BNF-03 & L'accès au dashboard administrateur doit être vérifié côté serveur à chaque requête (rôle \texttt{admin} dans \texttt{profiles}) & Layout serveur \texttt{app/dashboard/layout.tsx} \\[4pt]
+
+  BNF-04 & Un utilisateur ne peut accéder qu'à ses propres réservations et à son propre profil & Row Level Security (RLS) Supabase sur tables \texttt{reservations} et \texttt{profiles} \\[4pt]
+
+  BNF-05 & Les mots de passe utilisateurs ne sont jamais stockés dans la base de données du projet & Délégation à Supabase Auth (hachage bcrypt côté Supabase) \\[4pt]
+
+  BNF-06 & Le numéro de carte bancaire ne transite jamais par les serveurs de l'application & Externalisation vers Stripe Checkout (PCI-DSS Level 1) \\[4pt]
+
+  BNF-07 & Le cookie de session Supabase doit être \texttt{httpOnly} et \texttt{secure} (HTTPS en production) & Configuration \texttt{@supabase/ssr} \\[4pt]
+
+  BNF-08 & Les données personnelles collectées (email, nom, historique) doivent être conformes à la loi marocaine 09-08 & Déclaration CNDP + politique de confidentialité affichée \\
+\end{longtable}
+
+\section{Performance}
+
+\begin{longtable}{p{1.2cm}p{8cm}p{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Exigence} & \textbf{Mécanisme de conformité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-09 & Le premier affichage des pages publiques (catalogue, fiche film, programme) doit atteindre un \textit{First Contentful Paint} (FCP) inférieur à 2\,s sur connexion 4G (20\,Mbps) & Server-Side Rendering (SSR) avec React Server Components \\[4pt]
+
+  BNF-10 & Le plan de salle (\texttt{SeatPicker}) doit charger et afficher les sièges disponibles en moins de 1,5\,s après sélection de la séance & Chargement des sièges occupés côté serveur avant rendu \\[4pt]
+
+  BNF-11 & Les pages doivent être référençables par les moteurs de recherche (SEO) & Rendu SSR produisant du HTML complet indexable \\[4pt]
+
+  BNF-12 & L'application doit fonctionner correctement sur les navigateurs modernes (Chrome, Firefox, Safari, Edge — versions $\leq$ 2 ans) & Standards web / CSS moderne sans préfixes propriétaires \\[4pt]
+
+  BNF-13 & L'interface doit être responsive et utilisable sur mobile (viewport $\geq$ 320\,px) & CSS personnalisé avec variables et media queries \\
+\end{longtable}
+
+\section{Disponibilité et Fiabilité}
+
+\begin{longtable}{p{1.2cm}p{8cm}p{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Exigence} & \textbf{Mécanisme de conformité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-14 & L'application doit être disponible 24h/24, 7j/7, avec une disponibilité cible $\geq$ 99,5\,\% & Déploiement sur Vercel (SLA 99,99\,\%) \\[4pt]
+
+  BNF-15 & En cas de paiement Stripe validé, la réservation doit être créée de manière atomique en base sans risque de doublon & Traitement via \texttt{/pay/success} côté serveur avec vérification \texttt{payment\_status === 'paid'} \\[4pt]
+
+  BNF-16 & Deux utilisateurs ne doivent pas pouvoir réserver les mêmes sièges simultanément & Rechargement des sièges occupés depuis Supabase au moment du rendu de la page séance (les sièges déjà réservés sont désactivés) \\[4pt]
+
+  BNF-17 & Le cookie draft doit expirer après 1~heure d'inactivité pour éviter des réservations sur des séances passées & \texttt{maxAge: 3600} dans la configuration du cookie \\
+\end{longtable}
+
+\section{Maintenabilité}
+
+\begin{longtable}{p{1.2cm}p{8cm}p{3.5cm}}
+  \toprule
+  \textbf{ID} & \textbf{Exigence} & \textbf{Mécanisme de conformité} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-18 & Le code doit être entièrement typé en TypeScript strict (mode \texttt{strict: true} dans \texttt{tsconfig.json}) & Configuration TypeScript stricte \\[4pt]
+
+  BNF-19 & Les entités métier (\texttt{Film}, \texttt{Screening}, \texttt{Snack}, \texttt{Seat}, \texttt{Reservation}) doivent être définies comme types TypeScript dans un fichier centralisé \texttt{lib/types.ts} & Fichier \texttt{lib/types.ts} \\[4pt]
+
+  BNF-20 & Les Server Actions doivent être isolées par domaine fonctionnel dans des fichiers \texttt{actions.ts} colocalisés avec leurs routes & Convention Next.js App Router \\[4pt]
+
+  BNF-21 & Le code doit passer la vérification ESLint sans erreur (\texttt{npm run lint}) & Configuration ESLint Next.js \\
+\end{longtable}
+
+%% ── CHAPITRE 6 ───────────────────────────────────────────────
+\chapter{Contraintes Techniques}
+
+\section{Stack Technique Imposée}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{llXl}
+\toprule
+\textbf{Couche} & \textbf{Technologie} & \textbf{Contrainte} & \textbf{Version min.} \\
+\midrule
+Framework Web      & Next.js App Router  & Obligatoire — SSR + Server Actions & 15.x \\
+Langage            & TypeScript          & Obligatoire — mode strict          & 5.x \\
+UI Library         & React               & Imposé par Next.js                 & 19.x \\
+Base de données    & Supabase (PostgreSQL) & Obligatoire — BaaS cloud          & Latest \\
+Authentification   & Supabase Auth       & Obligatoire — sessions SSR         & @supabase/ssr \\
+Paiement           & Stripe Checkout     & Obligatoire — PCI-DSS              & stripe 22.x \\
+Runtime            & Node.js             & Requis par Next.js                 & 18.x+ \\
+Hébergement cible  & Vercel              & Recommandé pour Next.js serverless & Latest \\
+\bottomrule
+\end{tabularx}
+\caption{Stack technique imposée}
+\end{table}
+
+\section{Contraintes d'Environnement}
+
+\begin{itemize}
+  \item L'application doit fonctionner avec les variables d'environnement définies dans \texttt{.env.local} sans modification du code source.
+  \item Les clés sensibles (\texttt{SUPABASE\_SERVICE\_ROLE\_KEY}, \texttt{STRIPE\_SECRET\_KEY}) ne doivent jamais être préfixées \texttt{NEXT\_PUBLIC\_}.
+  \item Le schéma de base de données est initialisé via le fichier \texttt{supabase/schema.sql} — aucune migration manuelle ne doit être requise.
+  \item La Row Level Security (RLS) doit être activée sur toutes les tables Supabase.
+\end{itemize}
+
+\section{Contraintes de Déploiement}
+
+\begin{itemize}
+  \item L'application doit builder sans erreur TypeScript ni ESLint (\texttt{npm run build}).
+  \item La variable \texttt{NEXT\_PUBLIC\_APP\_URL} doit pointer vers l'URL de production : elle construit les URLs de retour Stripe (\texttt{success\_url} et \texttt{cancel\_url}). La confirmation du paiement est effectuée par la page \texttt{/pay/success}, qui vérifie le statut auprès de l'API Stripe — aucun endpoint webhook n'est requis.
+\end{itemize}
+
+%% ── CHAPITRE 7 ───────────────────────────────────────────────
+\chapter{Architecture Cible}
+
+\section{Modèle Architectural}
+
+L'application repose sur une architecture \textbf{Server-Side Rendering (SSR)} avec \textbf{Server Actions}, implémentée via le Next.js App Router. Ce modèle garantit que toute la logique métier critique s'exécute côté serveur.
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lXl}
+\toprule
+\textbf{Couche} & \textbf{Responsabilité} & \textbf{Localisation} \\
+\midrule
+Présentation (Client)  & Composants interactifs (\texttt{SeatPicker}, \texttt{HeroCarousel}) avec état local React & \texttt{'use client'} components \\
+Présentation (Serveur) & Pages SSR, layouts, chargement données initiales & \texttt{'use server'} / RSC \\
+Logique métier         & Server Actions : réservation, paiement, CRUD & \texttt{actions.ts} colocalisés \\
+Accès données          & Clients Supabase SSR (serveur) et Supabase (client) & \texttt{lib/supabase/} \\
+Persistance            & PostgreSQL managé via Supabase avec RLS & Supabase Cloud \\
+Paiement               & API Stripe (clé secrète côté serveur uniquement) & \texttt{app/pay/actions.ts} \\
+État session tunnel    & Cookie HTTP \texttt{lumiere\_draft} (type \texttt{Draft}) & \texttt{lib/booking.ts} \\
+\bottomrule
+\end{tabularx}
+\caption{Couches architecturales — Lumière Cinémas}
+\end{table}
+
+\section{Flux de Données Principal}
+
+\begin{enumerate}
+  \item Le navigateur envoie une requête HTTP à \textbf{Next.js App Router}.
+  \item Un \textbf{React Server Component} récupère les données depuis \textbf{Supabase} (PostgreSQL) via le client SSR.
+  \item Le HTML est généré côté serveur et envoyé au navigateur (SSR).
+  \item Les mutations (réservation, paiement, CRUD) passent par des \textbf{Server Actions} (\texttt{'use server'}) qui accèdent à Supabase et Stripe avec les clés secrètes.
+  \item Le navigateur ne reçoit jamais de clé API sensible.
+\end{enumerate}
+
+\section{Modèle de Données}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\textwidth}{lXp{4.5cm}}
+\toprule
+\textbf{Table} & \textbf{Attributs principaux} & \textbf{Relations / Contraintes} \\
+\midrule
+\texttt{films}       & \texttt{id} (UUID), \texttt{title}, \texttt{director}, \texttt{year}, \texttt{duration}, \texttt{genres} (text[]), \texttt{rating}, \texttt{synopsis}, \texttt{tagline}, \texttt{cast\_members} (text[]), \texttt{poster\_url}, \texttt{poster\_gradient}, \texttt{poster\_text}, \texttt{backdrop\_gradient}, \texttt{accent\_tone}, \texttt{trailer\_url} (opt.) & Clé primaire UUID \\[4pt]
+
+\texttt{screenings}  & \texttt{id} (UUID), \texttt{film\_id} (FK), \texttt{starts\_at} (timestamptz), \texttt{room} (texte — libellé de salle), \texttt{format}, \texttt{total\_seats}, \texttt{price\_standard}, \texttt{price\_premium}, \texttt{price\_duo} & FK vers \texttt{films} \\[4pt]
+
+\texttt{rooms}       & \texttt{id} (UUID), \texttt{name}, \texttt{tech}, \texttt{capacity}, \texttt{description}, \texttt{accent\_color} & Catalogue indépendant (page \texttt{/salles}) \\[4pt]
+
+\texttt{snacks}      & \texttt{id} (UUID), \texttt{name}, \texttt{size}, \texttt{price}, \texttt{emoji}, \texttt{description} & Clé primaire UUID \\[4pt]
+
+\texttt{reservations}& \texttt{id} (UUID), \texttt{user\_id} (FK), \texttt{screening\_id} (FK), \texttt{seats} (text[]), \texttt{seat\_categories} (jsonb), \texttt{snacks} (jsonb), \texttt{total\_price}, \texttt{status} (enum), \texttt{reference} (unique) & FK vers \texttt{auth.users}, FK vers \texttt{screenings}, contrainte UNIQUE sur \texttt{reference} \\[4pt]
+
+\texttt{profiles}    & \texttt{id} (UUID, FK auth.users), \texttt{email}, \texttt{role} (enum : \texttt{user}/\texttt{admin}), \texttt{created\_at} & Synchronisé avec \texttt{auth.users} via trigger \\
+\bottomrule
+\end{tabularx}
+\caption{Modèle de données — Tables Supabase (PostgreSQL)}
+\end{table}
+
+\begin{notebox}
+\textbf{RLS activée sur toutes les tables.} Politiques principales :
+\begin{itemize}[noitemsep]
+  \item \texttt{reservations} : un utilisateur ne lit que ses propres lignes (\texttt{user\_id = auth.uid()}).
+  \item \texttt{profiles} : un utilisateur ne lit que son propre profil ; les admins lisent tout.
+  \item \texttt{films}, \texttt{screenings}, \texttt{snacks}, \texttt{rooms} : lecture publique autorisée ; écriture réservée aux admins (via service role en Server Action).
+\end{itemize}
+\end{notebox}
+
+%% ── CHAPITRE 8 ───────────────────────────────────────────────
+\chapter{Description des Cas d'Usage Principaux}
+
+\section{CU-01 — Réserver et payer en ligne}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Description} \\
+\midrule
+Identifiant        & CU-01 \\
+Titre              & Réserver des places et payer par carte bancaire \\
+Acteur principal   & Utilisateur connecté \\
+Déclencheur        & L'utilisateur clique sur « Voir les séances » depuis la fiche film ou l'accueil \\
+Pré-condition      & L'utilisateur est authentifié. La séance sélectionnée a des places disponibles. \\
+Post-condition     & Une réservation est créée en base (statut \texttt{confirmed}). Un billet QR code est généré. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario principal (succès)}} \\
+\midrule
+1 & L'utilisateur sélectionne une séance depuis la liste des séances disponibles. \\
+2 & Le système affiche le plan de salle interactif avec les sièges disponibles et occupés. \\
+3 & L'utilisateur sélectionne un ou plusieurs sièges. Le sous-total s'affiche en temps réel. \\
+4 & L'utilisateur clique « Continuer ». La Server Action \texttt{pickSeats()} persiste le draft en cookie et redirige vers \texttt{/snacks}. \\
+5 & L'utilisateur sélectionne optionnellement des snacks. La Server Action \texttt{addSnacks()} met à jour le cookie draft. \\
+6 & L'utilisateur accède à la page de paiement \texttt{/pay} affichant le récapitulatif complet recalculé côté serveur. \\
+7 & L'utilisateur choisit « Payer par carte » et clique sur le bouton de paiement. \\
+8 & La Server Action \texttt{createCheckoutSession()} crée une session Stripe et redirige vers la page Stripe hébergée. \\
+9 & L'utilisateur entre ses informations de carte sur la page Stripe et confirme le paiement. \\
+10 & Stripe redirige vers \texttt{/pay/success?session\_id=...}. La page vérifie le statut \texttt{'paid'}, crée la réservation en base et redirige vers \texttt{/confirm/[id]}. \\
+11 & L'utilisateur visualise son billet numérique avec QR code et référence \texttt{LM-AAAA-XXXX}. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénarios alternatifs}} \\
+\midrule
+3a & Le siège est occupé entre l'affichage et la validation → le système empêche la sélection (siège désactivé). \\
+7a & L'utilisateur choisit « Payer en espèces » → \texttt{createCashReservation()} crée la réservation en statut \texttt{pending} immédiatement. \\
+8a & La session Stripe expire → l'utilisateur est redirigé vers \texttt{/pay} avec son draft intact. \\
+10a & \texttt{payment\_status !== 'paid'} → l'utilisateur est redirigé vers \texttt{/pay} avec message d'erreur. \\
+\bottomrule
+\end{tabularx}
+\caption{CU-01 — Réserver et payer en ligne}
+\end{table}
+
+\newpage
+\section{CU-02 — Gérer le catalogue de films (Admin)}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Description} \\
+\midrule
+Identifiant        & CU-02 \\
+Titre              & Ajouter, modifier ou supprimer un film \\
+Acteur principal   & Administrateur \\
+Déclencheur        & L'administrateur accède à \texttt{/dashboard/films} \\
+Pré-condition      & L'utilisateur est authentifié avec le rôle \texttt{admin}. \\
+Post-condition     & La table \texttt{films} est mise à jour en base. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario : Création}} \\
+\midrule
+1 & L'administrateur clique sur « Ajouter un film ». \\
+2 & Le système affiche le formulaire \texttt{FilmForm} avec tous les champs requis. \\
+3 & L'administrateur remplit le formulaire et sélectionne une image d'affiche. \\
+4 & La Server Action \texttt{createFilm()} uploade l'image vers Supabase Storage et insère le film en base. \\
+5 & Le système redirige vers la liste des films avec confirmation de succès. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario : Suppression}} \\
+\midrule
+1 & L'administrateur clique sur « Supprimer » pour un film. \\
+2 & Le composant \texttt{DeleteButton} affiche une confirmation. \\
+3 & L'administrateur confirme. La Server Action \texttt{deleteFilm()} supprime le film et son affiche du Storage. \\
+\bottomrule
+\end{tabularx}
+\caption{CU-02 — Gestion du catalogue de films}
+\end{table}
+
+\section{CU-03 — Consulter l'historique de réservations}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Description} \\
+\midrule
+Identifiant      & CU-03 \\
+Titre            & Consulter ses réservations passées et à venir \\
+Acteur principal & Utilisateur connecté \\
+Déclencheur      & L'utilisateur accède à \texttt{/mes-reservations} \\
+Pré-condition    & L'utilisateur est authentifié. \\
+Post-condition   & Les réservations de l'utilisateur s'affichent (filtrées par RLS). \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario principal}} \\
+\midrule
+1 & Le RSC \texttt{/mes-reservations} appelle Supabase côté serveur. \\
+2 & La politique RLS ne retourne que les réservations où \texttt{user\_id = auth.uid()}. \\
+3 & La liste des réservations s'affiche avec film, date, sièges, total et statut. \\
+4a & Si aucune réservation → message « Vous n'avez pas encore de réservation ». \\
+\bottomrule
+\end{tabularx}
+\caption{CU-03 — Historique des réservations}
+\end{table}
+
+\newpage
+\section{CU-04 — S'inscrire et se connecter}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Description} \\
+\midrule
+Identifiant        & CU-04 \\
+Titre              & Créer un compte et s'authentifier \\
+Acteur principal   & Visiteur \\
+Déclencheur        & Le visiteur clique sur « Connexion » / « Inscription » dans le header, ou est redirigé depuis le tunnel de réservation \\
+Pré-condition      & Le visiteur n'est pas authentifié. \\
+Post-condition     & (Inscription) Un compte \texttt{auth.users} et un profil \texttt{profiles} sont créés. (Connexion) Une session JWT est établie via cookie. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario : Inscription}} \\
+\midrule
+1 & Le visiteur accède à \texttt{/signup} et remplit le formulaire (email, mot de passe, confirmation). \\
+2 & La Server Action \texttt{signUp()} appelle \texttt{supabase.auth.signUp()}. \\
+3 & Supabase crée le compte dans \texttt{auth.users} et déclenche le trigger \texttt{handle\_new\_user()} qui insère un profil dans \texttt{profiles} (rôle : \texttt{user}). \\
+4 & L'utilisateur est redirigé vers la page d'accueil ou l'URL \texttt{next} mémorisée. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario : Connexion}} \\
+\midrule
+1 & Le visiteur accède à \texttt{/login} et saisit email + mot de passe. \\
+2 & La Server Action \texttt{signIn()} appelle \texttt{supabase.auth.signInWithPassword()}. \\
+3 & Supabase valide les credentials et émet un JWT stocké dans un cookie HTTP. \\
+4 & L'utilisateur est redirigé vers la page cible. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénarios alternatifs}} \\
+\midrule
+2a & Email déjà utilisé à l'inscription → message d'erreur « Cet email est déjà enregistré ». \\
+2b & Mot de passe incorrect à la connexion → message d'erreur « Email ou mot de passe incorrect ». \\
+2c & Champs manquants → erreurs de validation inline sous les champs concernés. \\
+\bottomrule
+\end{tabularx}
+\caption{CU-04 — Inscription et connexion}
+\end{table}
+
+\section{CU-05 — Planifier une séance (Admin)}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Attribut} & \textbf{Description} \\
+\midrule
+Identifiant        & CU-05 \\
+Titre              & Créer une nouvelle séance de cinéma \\
+Acteur principal   & Administrateur \\
+Déclencheur        & L'administrateur accède à \texttt{/dashboard/seances} et clique sur « Nouvelle séance » \\
+Pré-condition      & L'utilisateur est authentifié avec le rôle \texttt{admin}. Au moins un film et une salle existent en base. \\
+Post-condition     & La séance est créée dans la table \texttt{screenings} et apparaît immédiatement dans le programme public. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénario principal}} \\
+\midrule
+1 & L'administrateur remplit le formulaire \texttt{ScreeningForm} : sélection du film, de la salle, date/heure, format (VOSTFR / VF / IMAX / 4K HDR), prix par catégorie (Standard, Premium, Duo). \\
+2 & La Server Action \texttt{createScreening()} valide les données et insère la ligne dans \texttt{screenings}. \\
+3 & Le système redirige vers la liste des séances avec confirmation. \\
+4 & La nouvelle séance apparaît dans le programme public (\texttt{/programme}) lors de la prochaine visite. \\
+\midrule
+\multicolumn{2}{l}{\textbf{Scénarios alternatifs}} \\
+\midrule
+2a & Date dans le passé → erreur de validation « La date de séance doit être future ». \\
+2b & Conflit horaire pour la même salle → avertissement (non bloquant en v1). \\
+\bottomrule
+\end{tabularx}
+\caption{CU-05 — Planification d'une séance}
+\end{table}
+
+%% ── CHAPITRE 9 ───────────────────────────────────────────────
+\chapter{Exigences d'Interface Utilisateur}
+
+\section{Charte Graphique}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Élément} & \textbf{Valeur} & \textbf{Usage} \\
+\midrule
+Couleur fond principal  & \texttt{\#0a0a0f} (noir profond)  & Arrière-plan global \\
+Couleur fond secondaire & \texttt{\#12121a}                  & Cartes, panneaux \\
+Couleur d'accent        & \texttt{\#E50914} (rouge cinéma)   & Boutons CTA, sièges sélectionnés \\
+Couleur texte principal & \texttt{\#ffffff}                  & Titres, corps de texte \\
+Couleur texte secondaire& \texttt{\#a0a0b0}                  & Labels, métadonnées \\
+Catégorie Standard      & Gris foncé (\texttt{\#2a2a3a})     & Plan de salle \\
+Catégorie Premium       & Doré (\texttt{\#f59e0b})           & Plan de salle \\
+Catégorie Duo           & Rouge foncé (\texttt{\#7f1d1d})    & Plan de salle \\
+\bottomrule
+\end{tabular}
+\caption{Charte graphique — Lumière Cinémas}
+\end{table}
+
+\section{Exigences UI par Module}
+
+\begin{longtable}{p{1.2cm}p{9cm}l}
+  \toprule
+  \textbf{ID} & \textbf{Exigence interface} & \textbf{Module} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  UI-01 & Le carrousel de la page d'accueil doit afficher au minimum 3 films et changer automatiquement toutes les 5\,s avec transition fluide & Vitrine \\[4pt]
+
+  UI-02 & Le plan de salle doit distinguer visuellement 4 états : disponible, sélectionné, occupé, couloir & SeatPicker \\[4pt]
+
+  UI-03 & Le stepper doit afficher l'étape active, les étapes passées (style « done ») et les étapes futures (style grisé) & Tunnel \\[4pt]
+
+  UI-04 & Tout formulaire (inscription, connexion, CRUD admin) doit afficher les erreurs de validation inline sous les champs concernés & Auth / Admin \\[4pt]
+
+  UI-05 & Le billet de confirmation doit pouvoir être imprimé via \texttt{window.print()} avec un style d'impression adapté & Confirmation \\[4pt]
+
+  UI-06 & Le dashboard doit afficher les 4 KPIs sous forme de cards avec icône, valeur numérique et libellé & Admin \\[4pt]
+
+  UI-07 & Tout bouton de suppression doit déclencher une confirmation explicite avant action & Admin \\
+\end{longtable}
+
+%% ── CHAPITRE 10 ──────────────────────────────────────────────
+\chapter{Exigences de Test et Critères d'Acceptation}
+
+\section{Stratégie de Test}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Type} & \textbf{Outil envisagé} & \textbf{Périmètre} \\
+\midrule
+Tests fonctionnels manuels & Navigateur & Validation des parcours complets (réservation Stripe, paiement espèces, CRUD admin) \\
+Tests unitaires            & Jest        & Fonctions pures : \texttt{buildSeatMap()}, calcul du total, génération de référence \\
+Tests d'intégration        & Jest + Supabase DB test & Server Actions CRUD, politiques RLS \\
+Tests End-to-End           & Playwright  & Tunnel de réservation, connexion/inscription, dashboard admin \\
+\bottomrule
+\end{tabularx}
+\caption{Stratégie de test — Lumière Cinémas}
+\end{table}
+
+\section{Critères d'Acceptation Fonctionnels}
+
+\begin{longtable}{p{1.2cm}p{7.5cm}p{1.2cm}l}
+  \toprule
+  \textbf{Test} & \textbf{Scénario} & \textbf{Résultat attendu} & \textbf{Statut} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  CA-01 & Parcours complet Stripe : sélection séance $\to$ siège $\to$ snacks $\to$ paiement $\to$ billet & Réservation \texttt{confirmed} en base, billet affiché & Validé \\[4pt]
+
+  CA-02 & Parcours complet espèces : sélection séance $\to$ siège $\to$ snacks $\to$ paiement espèces $\to$ billet & Réservation \texttt{pending} en base, billet affiché & Validé \\[4pt]
+
+  CA-03 & Accès \texttt{/dashboard} sans authentification & Redirection vers \texttt{/login?next=/dashboard} & Validé \\[4pt]
+
+  CA-04 & Accès \texttt{/dashboard} avec compte utilisateur non admin & Redirection vers \texttt{/} & Validé \\[4pt]
+
+  CA-05 & Sièges occupés dans le SeatPicker & Sièges désactivés (non cliquables, opacité réduite) & Validé \\[4pt]
+
+  CA-06 & CRUD films depuis le dashboard & Création/modification/suppression réfléchies immédiatement dans la liste & Validé \\[4pt]
+
+  CA-07 & CRUD séances depuis le dashboard & Séances créées apparaissent dans le programme & Validé \\[4pt]
+
+  CA-08 & CRUD snacks depuis le dashboard & Snacks créés apparaissent dans la sélection du tunnel & Validé \\[4pt]
+
+  CA-09 & Bande-annonce YouTube avec URL non-embed (ex. \texttt{watch?v=XXX}) & Conversion automatique en URL embed et lecture en iframe & Validé \\[4pt]
+
+  CA-10 & Cookie draft expiré (ou absent) sur la page \texttt{/snacks} & Redirection vers la page d'accueil & Validé \\[4pt]
+
+  CA-11 & Statistiques dashboard (CA, comptages) & Valeurs cohérentes avec le contenu réel de la base & Validé \\[4pt]
+
+  CA-12 & Inscription d'un nouvel utilisateur & Profil créé dans \texttt{profiles} avec rôle \texttt{user} & Validé \\[4pt]
+
+  CA-13 & Deux utilisateurs tentant de réserver le même siège simultanément. \textit{Protocole : ouvrir deux sessions distinctes (navigation privée + normale), sélectionner la même séance et le même siège, soumettre les deux formulaires \texttt{pickSeats()} à 100\,ms d'intervalle.} & Un seul obtient la confirmation, l'autre voit le siège marqué occupé & À tester \\[4pt]
+
+  CA-14 & Grille catalogue : tous les films s'affichent avec affiche, titre, durée, genre et classification. Aucun champ vide visible & Données complètes affichées pour chaque film & Validé \\[4pt]
+
+  CA-15 & Page \texttt{/prochainement} : seuls les films sans séance planifiée à venir s'affichent & Films annoncés listés, aucun film ayant une séance future présent & Validé \\[4pt]
+
+  CA-16 & Page \texttt{/salles} : chaque salle affiche son nom, sa technologie (Dolby Atmos / IMAX / 4K HDR) et sa capacité & Informations des salles affichées correctement & Validé \\[4pt]
+
+  CA-17 & Déconnexion : après clic « Se déconnecter », tenter d'accéder à \texttt{/mes-reservations} & Redirection vers \texttt{/login}, session invalidée, cookie JWT supprimé & Validé \\[4pt]
+
+  CA-18 & Historique : connecté avec le compte A, vérifier que les réservations du compte B n'apparaissent pas & Seules les réservations du compte A visibles — isolation RLS vérifiée & Validé \\[4pt]
+
+  CA-19 & Page \texttt{/account} : affiche l'email et la date d'inscription de l'utilisateur connecté & Données personnelles de l'utilisateur correctes, pas de fuite d'autres profils & Validé \\[4pt]
+
+  CA-20 & CRUD Salles : créer une nouvelle salle depuis \texttt{/dashboard}, vérifier qu'elle apparaît dans la liste déroulante du formulaire de création de séance & Salle sélectionnable dans \texttt{ScreeningForm} immédiatement après création & Validé \\[4pt]
+
+  CA-21 & Programme quotidien : cliquer sur une date future, vérifier que seules les séances de ce jour s'affichent, sans séances passées ni séances d'autres jours & Filtrage par date fonctionnel & Validé \\
+\end{longtable}
+
+\section{Critères d'Acceptation Non-Fonctionnels}
+
+\begin{longtable}{p{1.2cm}p{8.5cm}l}
+  \toprule
+  \textbf{Test} & \textbf{Critère} & \textbf{Statut} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  CAN-01 & \texttt{npm run build} se termine sans erreur TypeScript ni ESLint & Validé \\[4pt]
+
+  CAN-02 & Aucune clé \texttt{SUPABASE\_SERVICE\_ROLE\_KEY} ni \texttt{STRIPE\_SECRET\_KEY} visible dans les DevTools du navigateur & Validé \\[4pt]
+
+  CAN-03 & FCP $<$ 2\,s sur la page d'accueil en production. \textit{Protocole : Chrome DevTools $\to$ Lighthouse $\to$ Catégorie Performance $\to$ Mode Mobile $\to$ Throttling « Slow 4G » $\to$ mesurer 3 fois et retenir la médiane.} & À mesurer en production \\[4pt]
+
+  CAN-04 & Score Lighthouse Performance $\geq$ 75 et Accessibility $\geq$ 80 en production. \textit{Même protocole que CAN-03. Vérifier également Best Practices $\geq$ 90 et SEO $\geq$ 85 sur les pages publiques.} & À mesurer en production \\[4pt]
+
+  CAN-05 & L'application s'affiche correctement sur un écran 375\,px (iPhone SE). \textit{Protocole : Chrome DevTools $\to$ mode responsive $\to$ iPhone SE $\to$ vérifier accueil, SeatPicker et billet.} & Validé \\
+\end{longtable}
+
+%% ── CHAPITRE 11 ──────────────────────────────────────────────
+\chapter{Planning et Jalons}
+
+\section{Découpage en Phases}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{p{0.8cm}p{6.2cm}p{1.2cm}p{1.2cm}p{3.6cm}}
+\toprule
+\textbf{Phase} & \textbf{Tâches principales} & \textbf{Début} & \textbf{Fin} & \textbf{Responsable(s)} \\
+\midrule
+P1  & Analyse des besoins, étude technique, rédaction CdC & 01/05 & 07/05 & Kamal Chaafie \\
+P2  & Conception architecture, modèle de données, diagrammes UML & 04/05 & 12/05 & Wassim Lazim, Marwan Saadouni \\
+P3a & Configuration : Next.js, Supabase, Stripe, variables d'env. & 06/05 & 09/05 & Marwan Saadouni \\
+P3b & Développement back-end Supabase : schéma SQL, RLS, Auth & 11/05 & 21/05 & Wassim Lazim \\
+P3c & Développement vitrine publique : accueil, carousel, séances & 14/05 & 23/05 & Marwan Saadouni \\
+P3d & Tunnel de réservation : SeatPicker, snacks, draft cookie & 20/05 & 01/06 & Wassim Lazim \\
+P3e & Intégration Stripe : Checkout, page de retour, confirmation & 25/05 & 02/06 & Wassim Lazim \\
+P3f & Dashboard administrateur : CRUD films/séances/snacks, KPIs & 27/05 & 06/06 & Marwan Saadouni \\
+P4  & Tests fonctionnels manuels, correction des anomalies & 03/06 & 09/06 & Kamal Chaafie \\
+P5  & Rédaction du rapport technique, mise en forme & 22/05 & 10/06 & Kamal Chaafie \\
+P6  & Finalisation, revue de code, préparation soutenance & 08/06 & 10/06 & Tous les membres \\
+\bottomrule
+\end{tabular}
+\caption{Découpage en phases et jalons — 01/05 au 10/06/2026}
+\end{table}
+
+\section{Jalons Clés}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Jalon} & \textbf{Description} & \textbf{Date cible} \\
+\midrule
+J1 & Cahier des charges validé, architecture cible définie & 12/05/2026 \\
+J2 & Schéma Supabase déployé, authentification fonctionnelle & 21/05/2026 \\
+J3 & Tunnel de réservation complet (sans Stripe) fonctionnel & 01/06/2026 \\
+J4 & Intégration Stripe opérationnelle en mode test & 02/06/2026 \\
+J5 & Dashboard admin complet et testé & 06/06/2026 \\
+J6 & Tous les CA validés, build de production OK & 09/06/2026 \\
+J7 & Soutenance PFA & 10/06/2026 \\
+\bottomrule
+\end{tabular}
+\caption{Jalons clés du projet}
+\end{table}
+
+%% ── CHAPITRE 12 ──────────────────────────────────────────────
+\chapter{Matrice de Traçabilité}
+
+La matrice de traçabilité établit la correspondance entre chaque besoin fonctionnel (BF-XX), le cas d'usage qui le couvre (CU-XX) et le critère d'acceptation qui le valide (CA-XX). Elle garantit qu'aucune exigence n'est non-testée et qu'aucun test ne porte sur une exigence inexistante.
+
+\begin{longtable}{p{1.1cm}p{5cm}p{1.3cm}p{1.2cm}l}
+  \toprule
+  \textbf{BF} & \textbf{Intitulé (résumé)} & \textbf{Module} & \textbf{CU lié} & \textbf{CA/CAN lié} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BF-01 & Carrousel HeroCarousel page d'accueil           & Vitrine & ---   & UI-01 \\
+  BF-02 & Grille catalogue de films                       & Vitrine & ---   & CA-14 \\
+  BF-03 & Fiche film + bande-annonce YouTube              & Vitrine & ---   & CA-09 \\
+  BF-04 & Programme quotidien filtrable                   & Vitrine & ---   & CA-21 \\
+  BF-05 & Page Prochainement                              & Vitrine & ---   & CA-15 \\
+  BF-06 & Page Salles et équipements                      & Vitrine & ---   & CA-16 \\
+  BF-07 & Places restantes en temps réel                  & Vitrine & CU-01 & CA-05 \\
+  BF-08 & Inscription email/mot de passe                  & Auth    & CU-04 & CA-12 \\
+  BF-09 & Connexion avec session cookie                   & Auth    & CU-04 & CA-03 \\
+  BF-10 & Déconnexion + invalidation session              & Auth    & CU-04 & CA-17 \\
+  BF-11 & Redirection visiteur non-auth → login           & Auth    & CU-04 & CA-03 \\
+  BF-12 & Blocage dashboard non-admin                     & Auth    & ---   & CA-04 \\
+  BF-13 & Stepper 6 étapes                                & Tunnel  & CU-01 & UI-03 \\
+  BF-14 & SeatPicker plan de salle interactif             & Tunnel  & CU-01 & CA-05 \\
+  BF-15 & Sélection multi-sièges + sous-total + draft     & Tunnel  & CU-01 & CA-01, CA-02 \\
+  BF-16 & Catalogue snacks incrémentable                  & Tunnel  & CU-01 & CA-08 \\
+  BF-17 & Cookie draft persistant entre étapes            & Tunnel  & CU-01 & CA-10 \\
+  BF-18 & Page paiement récapitulatif côté serveur        & Tunnel  & CU-01 & CA-01 \\
+  BF-19 & Paiement Stripe Checkout + retour               & Tunnel  & CU-01 & CA-01 \\
+  BF-20 & Paiement espèces (réservation pending)          & Tunnel  & CU-01 & CA-02 \\
+  BF-21 & Création réservation confirmed après Stripe     & Tunnel  & CU-01 & CA-01 \\
+  BF-22 & Billet numérique QR code                        & Tunnel  & CU-01 & CA-01, CA-02 \\
+  BF-23 & Suppression cookie draft après confirmation     & Tunnel  & CU-01 & CA-10 \\
+  BF-24 & Historique réservations utilisateur             & Compte  & CU-03 & CA-18 \\
+  BF-25 & Page compte personnel                           & Compte  & ---   & CA-19 \\
+  BF-26 & KPIs dashboard (4 indicateurs)                  & Admin   & ---   & CA-11 \\
+  BF-27 & CRUD Films + upload affiche                     & Admin   & CU-02 & CA-06 \\
+  BF-28 & CRUD Séances                                    & Admin   & CU-05 & CA-07 \\
+  BF-29 & CRUD Snacks                                     & Admin   & ---   & CA-08 \\
+  BF-30 & Liste 200 dernières réservations                & Admin   & ---   & CA-11 \\
+  BF-31 & Gestion rôles utilisateurs                      & Admin   & ---   & CA-04 \\
+  BF-32 & CRUD Salles                                     & Admin   & CU-05 & CA-20 \\
+\end{longtable}
+
+\bigskip
+
+\begin{longtable}{p{1.2cm}p{5.5cm}p{1.2cm}p{2.5cm}}
+  \toprule
+  \textbf{BNF} & \textbf{Intitulé (résumé)} & \textbf{Catégorie} & \textbf{CAN lié} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  BNF-01 & Clés API jamais dans le bundle client          & Sécurité       & CAN-02 \\
+  BNF-02 & Mutations via Server Actions uniquement        & Sécurité       & CAN-02 \\
+  BNF-03 & Vérification rôle admin côté serveur           & Sécurité       & CA-03, CA-04 \\
+  BNF-04 & RLS : utilisateur voit ses propres données     & Sécurité       & CA-18 \\
+  BNF-05 & Mots de passe jamais stockés en clair          & Sécurité       & CA-12 \\
+  BNF-06 & Numéro de carte jamais côté application        & Sécurité       & CAN-02 \\
+  BNF-07 & Cookie session httpOnly + secure               & Sécurité       & CA-17 \\
+  BNF-08 & Conformité loi 09-08 (CNDP)                   & Sécurité       & CAN-01 \\
+  BNF-09 & FCP $<$ 2\,s sur 4G                           & Performance    & CAN-03 \\
+  BNF-10 & SeatPicker chargé en $<$ 1,5\,s               & Performance    & CA-05 \\
+  BNF-11 & Pages SSR indexables (SEO)                     & Performance    & CAN-04 \\
+  BNF-12 & Compatibilité navigateurs modernes             & Performance    & CAN-04 \\
+  BNF-13 & Interface responsive ($\geq$ 320\,px)          & Performance    & CAN-05 \\
+  BNF-14 & Disponibilité $\geq$ 99,5\,\%                  & Disponibilité  & CAN-01 \\
+  BNF-15 & Réservation atomique sans doublon              & Disponibilité  & CA-13 \\
+  BNF-16 & Pas de double réservation sur même siège       & Disponibilité  & CA-13 \\
+  BNF-17 & Cookie draft expire après 1~heure              & Disponibilité  & CA-10 \\
+  BNF-18 & TypeScript strict mode                         & Maintenabilité & CAN-01 \\
+  BNF-19 & Types centralisés dans \texttt{lib/types.ts}   & Maintenabilité & CAN-01 \\
+  BNF-20 & Server Actions isolées par domaine             & Maintenabilité & CAN-01 \\
+  BNF-21 & Build sans erreur ESLint                       & Maintenabilité & CAN-01 \\
+\caption{Matrice de traçabilité — BNF vers critères d'acceptation non-fonctionnels}
+\end{longtable}
+
+\begin{notebox}
+\textbf{Couverture de test — 100\,\% :} les 32 besoins fonctionnels et les 21 besoins non-fonctionnels sont désormais chacun liés à au moins un critère d'acceptation (CA-01 à CA-21, CAN-01 à CAN-05, UI-01 à UI-07). Aucune exigence ne reste sans validation explicite.
+\end{notebox}
+
+%% ── CHAPITRE 13 ──────────────────────────────────────────────
+\chapter{Glossaire}
+
+\begin{longtable}{lp{10cm}}
+  \toprule
+  \textbf{Terme} & \textbf{Définition} \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  App Router        & Système de routage Next.js basé sur le système de fichiers, introduit en version 13 et stabilisé en v15. Permet les React Server Components, Server Actions et les layouts imbriqués. \\[4pt]
+
+  Draft cookie      & Cookie HTTP nommé \texttt{lumiere\_draft} contenant l'état intermédiaire d'une réservation en cours (séance, sièges sélectionnés, snacks). Expiration : 1 heure. \\[4pt]
+
+  RLS               & \textit{Row Level Security} — politique de sécurité PostgreSQL activée sur Supabase permettant de filtrer les lignes d'une table selon l'identité de l'utilisateur connecté. \\[4pt]
+
+  RSC               & \textit{React Server Components} — composants React dont le rendu s'exécute exclusivement côté serveur, sans code JavaScript envoyé au navigateur. \\[4pt]
+
+  Server Action     & Fonction TypeScript marquée \texttt{'use server'} exécutée exclusivement côté serveur Next.js, appelée depuis un formulaire ou un composant client. \\[4pt]
+
+  SeatPicker        & Composant React client (\texttt{components/SeatPicker.tsx}) affichant le plan de salle interactif d'une séance, permettant la sélection multi-sièges avec calcul du sous-total. \\[4pt]
+
+  SSR               & \textit{Server-Side Rendering} — technique de rendu où le HTML d'une page est généré côté serveur avant d'être envoyé au navigateur, améliorant le FCP et le SEO. \\[4pt]
+
+  Stepper           & Composant (\texttt{components/Stepper.tsx}) affichant la progression de l'utilisateur dans le tunnel de réservation en 6 étapes. \\[4pt]
+
+  Stripe Checkout   & Page de paiement hébergée par Stripe, certifiée PCI-DSS, vers laquelle l'utilisateur est redirigé pour saisir ses informations de carte bancaire. \\[4pt]
+
+  Webhook Stripe    & Requête HTTP POST envoyée par Stripe vers l'application après un événement de paiement (ex. \texttt{checkout.session.completed}), utilisée pour confirmer la réservation en base. \\[4pt]
+
+  Supabase          & Backend-as-a-Service open source fondé sur PostgreSQL, fournissant base de données managée, authentification, Row Level Security, stockage de fichiers et API REST/GraphQL automatique. \\[4pt]
+
+  BF-XX             & Code identifiant un \textbf{besoin fonctionnel} dans ce cahier des charges. \\[4pt]
+
+  BNF-XX            & Code identifiant un \textbf{besoin non-fonctionnel} dans ce cahier des charges. \\[4pt]
+
+  CA-XX             & Code identifiant un \textbf{critère d'acceptation} fonctionnel. \\[4pt]
+
+  CAN-XX            & Code identifiant un \textbf{critère d'acceptation non-fonctionnel}. \\[4pt]
+
+  FCP               & \textit{First Contentful Paint} — métrique de performance web mesurant le temps entre la navigation et le premier affichage de contenu par le navigateur. \\[4pt]
+
+  MAD               & Dirham marocain — devise utilisée pour tous les prix dans l'application. \\[4pt]
+
+  MoSCoW            & Méthode de priorisation des exigences : \textit{Must Have}, \textit{Should Have}, \textit{Could Have}, \textit{Won't Have (for now)}. \\
+\end{longtable}
+
+%% ── FIN DU DOCUMENT ──────────────────────────────────────────
+\end{document}

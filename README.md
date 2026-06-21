@@ -1,6 +1,6 @@
 # Lumière Cinémas — Plateforme de réservation SSR
 
-Projet de Fin d'Études (PFE) — Application web fullstack de réservation de places de cinéma.
+Projet de Fin d'Année (PFA) — Application web fullstack de réservation de places de cinéma.
 **Next.js 15 (App Router) + Supabase + Stripe**
 
 ---
@@ -8,6 +8,31 @@ Projet de Fin d'Études (PFE) — Application web fullstack de réservation de p
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?logo=supabase&logoColor=white)
 ![Stripe](https://img.shields.io/badge/Stripe-635BFF?logo=stripe&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-Llama%203.1-F55036)
+
+---
+
+## 📌 Contexte académique
+
+| | |
+|---|---|
+| **Auteur** | Wassim Lazim |
+| **Filière / Niveau** | DSI — Développement des Systèmes Informatique · 4ᵉ année |
+| **Type** | Projet de Fin d'Année (PFA) |
+| **Établissement** | École Marocaine des Sciences de l'Ingénieur (EMSI) |
+| **Année universitaire** | 2025–2026 |
+
+## 📄 Livrables (documents du projet)
+
+Les documents de soutenance sont à la racine du dépôt :
+
+| Document | Fichier | Contenu |
+|---|---|---|
+| **Rapport technique** | [`Rapport_Cinema_SSR.pdf`](./Rapport_Cinema_SSR.pdf) | Rapport complet : analyse des besoins, conception (UML), stack, implémentation, tests, et volet entrepreneuriat (Chap. 11) |
+| **Cahier des charges** | [`Cahier_de_charge_cinema.pdf`](./Cahier_de_charge_cinema.pdf) | Cahier des charges logique (CdCL) : besoins BF/BNF (MoSCoW), cas d'usage, critères d'acceptation, matrice de traçabilité |
+| **Volet entrepreneuriat** | [`Rapport_Entrepreneuriat_Wassim_Lazim.pdf`](./Rapport_Entrepreneuriat_Wassim_Lazim.pdf) | Étude entrepreneuriale autonome : marché, SWOT/PESTEL/Porter, faisabilité financière, aspect juridique |
+
+> Sources LaTeX : [`rapport.tex`](./rapport.tex) et [`cahier_des_charges.tex`](./cahier_des_charges.tex) — à compiler avec **XeLaTeX**.
 
 ## Stack technique
 
@@ -18,6 +43,7 @@ Projet de Fin d'Études (PFE) — Application web fullstack de réservation de p
 | Authentification | Supabase Auth — email/password, sessions via cookies SSR |
 | Paiement | Stripe Checkout (carte) + paiement en espèces |
 | Stockage | Supabase Storage (affiches films) |
+| Assistant IA | Chatbot RAG — retrieval TF-IDF + Groq (Llama 3.1 8B) |
 | Langage | TypeScript + React 19 |
 | Style | CSS custom — design sombre, accent rouge `#E50914` |
 
@@ -181,6 +207,7 @@ NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET=posters
 STRIPE_SECRET_KEY=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+GROQ_API_KEY=                       # chatbot RAG (console.groq.com — offre gratuite)
 ```
 
 ### Setup Supabase

@@ -6,7 +6,7 @@
 -- Profils utilisateurs (1:1 avec auth.users)
 create table if not exists public.profiles (
   id uuid primary key references auth.users on delete cascade,
-  email text not null,m
+  email text not null,
   full_name text,
   role text not null default 'user' check (role in ('user','admin')),
   created_at timestamptz default now()
@@ -28,7 +28,9 @@ create table if not exists public.films (
   poster_gradient text,
   poster_text text,
   backdrop_gradient text,
+  backdrop_image_url text,
   accent_tone text,
+  trailer_url text,
   created_at timestamptz default now()
 );
 
@@ -43,6 +45,17 @@ create table if not exists public.screenings (
   price_standard numeric(6,2) default 35.00,
   price_premium  numeric(6,2) default 55.00,
   price_duo      numeric(6,2) default 75.00,
+  created_at timestamptz default now()
+);
+
+-- Salles (catalogue présenté sur /salles et géré dans /dashboard/salles)
+create table if not exists public.rooms (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  tech text,
+  capacity int not null default 0,
+  description text,
+  accent_color text,
   created_at timestamptz default now()
 );
 
@@ -102,6 +115,7 @@ for each row execute function public.handle_new_user();
 alter table public.profiles      enable row level security;
 alter table public.films         enable row level security;
 alter table public.screenings    enable row level security;
+alter table public.rooms         enable row level security;
 alter table public.snacks        enable row level security;
 alter table public.reservations  enable row level security;
 
@@ -132,6 +146,13 @@ drop policy if exists "screenings read" on public.screenings;
 create policy "screenings read" on public.screenings for select using (true);
 drop policy if exists "screenings admin write" on public.screenings;
 create policy "screenings admin write" on public.screenings
+  for all using (public.is_admin()) with check (public.is_admin());
+
+-- rooms : lecture publique, écriture admin
+drop policy if exists "rooms read" on public.rooms;
+create policy "rooms read" on public.rooms for select using (true);
+drop policy if exists "rooms admin write" on public.rooms;
+create policy "rooms admin write" on public.rooms
   for all using (public.is_admin()) with check (public.is_admin());
 
 -- snacks : lecture publique, écriture admin
@@ -173,6 +194,11 @@ create policy "posters admin write" on storage.objects
 -- =====================================================================
 -- Seed minimal
 -- =====================================================================
+insert into public.rooms (name, tech, capacity, description, accent_color) values
+  ('Salle 1 · Dolby Atmos', 'Dolby Atmos · 4K HDR', 168, 'Salle phare avec son immersif Dolby Atmos et projection 4K HDR.', '#e50914'),
+  ('Salle 2 · IMAX',        'IMAX · Laser',         220, 'Écran géant IMAX et projection laser pour les blockbusters.',   '#1a6ebd')
+on conflict do nothing;
+
 insert into public.snacks (id, name, size, price, emoji, description) values
   ('pop-l',  'Popcorn salé',            'Grand · 1L',   7.50,  '🍿', 'Maïs frais soufflé sur place'),
   ('pop-m',  'Popcorn sucré',           'Moyen · 60cl', 6.00,  '🍿', 'Caramel maison'),
