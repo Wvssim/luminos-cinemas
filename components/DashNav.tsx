@@ -23,9 +23,10 @@ export default function DashNav({ email }: { email: string }) {
 
   // isOn : détermine si un lien est actif selon le mode de comparaison
   // exact=true : /dashboard uniquement (pas /dashboard/films)
-  // exact=false : tout chemin commençant par href (startsWith)
+  // exact=false : href lui-même ou un sous-chemin (frontière de segment "/")
+  //   -> évite de surligner une route au préfixe commun (ex: /dashboard/films-archive)
   const isOn = (href: string, exact?: boolean) =>
-    exact ? path === href : path.startsWith(href);
+    exact ? path === href : path === href || path.startsWith(href + '/');
 
   return (
     <aside className="dash__side">
