@@ -1,7 +1,8 @@
 # Lumière Cinémas — Plateforme de réservation SSR
 
-Projet de Fin d'Année (PFA) — Application web fullstack de réservation de places de cinéma.
-**Next.js 15 (App Router) + Supabase + Stripe**
+Application full stack de réservation de places de cinéma, conçue autour d’un parcours SSR complet : découverte des films, choix d’une séance et de sièges, ajout de snacks, paiement et émission d’un billet avec QR code.
+
+**Next.js 15 (App Router) + Supabase + Stripe + assistant RAG**
 
 ---
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs)
@@ -12,27 +13,16 @@ Projet de Fin d'Année (PFA) — Application web fullstack de réservation de pl
 
 ---
 
-## 📌 Contexte académique
+## Documentation de conception
 
-| | |
-|---|---|
-| **Auteur** | Wassim Lazim |
-| **Filière / Niveau** | DSI — Développement des Systèmes Informatique · 4ᵉ année |
-| **Type** | Projet de Fin d'Année (PFA) |
-| **Établissement** | École Marocaine des Sciences de l'Ingénieur (EMSI) |
-| **Année universitaire** | 2025–2026 |
-
-## 📄 Livrables (documents du projet)
-
-Les documents de soutenance sont à la racine du dépôt :
+Les documents suivants détaillent le besoin, la conception et les choix d’implémentation :
 
 | Document | Fichier | Contenu |
 |---|---|---|
-| **Rapport technique** | [`Rapport_Cinema_SSR.pdf`](./Rapport_Cinema_SSR.pdf) | Rapport complet : analyse des besoins, conception (UML), stack, implémentation, tests, et volet entrepreneuriat (Chap. 11) |
-| **Cahier des charges** | [`Cahier_de_charge_cinema.pdf`](./Cahier_de_charge_cinema.pdf) | Cahier des charges logique (CdCL) : besoins BF/BNF (MoSCoW), cas d'usage, critères d'acceptation, matrice de traçabilité |
-| **Volet entrepreneuriat** | [`Rapport_Entrepreneuriat_Wassim_Lazim.pdf`](./Rapport_Entrepreneuriat_Wassim_Lazim.pdf) | Étude entrepreneuriale autonome : marché, SWOT/PESTEL/Porter, faisabilité financière, aspect juridique |
+| **Rapport technique** | [`Rapport_Cinema_SSR.pdf`](./Rapport_Cinema_SSR.pdf) | Analyse des besoins, conception UML, architecture, implémentation et tests |
+| **Cahier des charges** | [`Cahier_de_charge_cinema.pdf`](./Cahier_de_charge_cinema.pdf) | Besoins fonctionnels et non fonctionnels, cas d’usage, critères d’acceptation et traçabilité |
 
-> Sources LaTeX : [`rapport.tex`](./rapport.tex) et [`cahier_des_charges.tex`](./cahier_des_charges.tex) — à compiler avec **XeLaTeX**.
+> Les sources LaTeX sont disponibles dans [`rapport.tex`](./rapport.tex) et [`cahier_des_charges.tex`](./cahier_des_charges.tex). La compilation requiert XeLaTeX.
 
 ## Stack technique
 
@@ -49,13 +39,41 @@ Les documents de soutenance sont à la racine du dépôt :
 
 ---
 
-## Couverture des objectifs TD
+## Vue d’ensemble de l’architecture
 
-### TD2 — Authentification
+```text
+Navigateur
+  ├─ Server Components / Server Actions Next.js
+  ├─ Supabase Auth + PostgreSQL + RLS + Storage
+  ├─ Stripe Checkout ──> callback de paiement ──> réservation confirmée
+  └─ ChatBubble ──> POST /api/chat
+                     ├─ retrieval local TF-IDF/cosine sur la base de connaissances
+                     └─ génération de la réponse via Groq
+```
 
-**Concept du cours :** mettre en place un flux login/logout complet avec protection des routes privées.
+- Les lectures sensibles et mutations métier sont exécutées côté serveur.
+- Les règles RLS protègent les données utilisateur ; les opérations d’administration utilisent un client dédié avec la clé `service_role`.
+- Le tunnel de réservation conserve un brouillon en cookie pendant une heure, puis crée la réservation au paiement ou lors du choix « espèces ».
+- L’assistant est une fonctionnalité d’aide indépendante : une indisponibilité du modèle n’altère pas le tunnel de réservation principal.
 
-**Implémentation dans le projet :**
+## Assistant RAG intégré
+
+Le chat combine deux étapes clairement séparées :
+
+1. **Retrieval local** : `lib/rag.ts` vectorise la question et les fragments de `lib/knowledge.ts` avec TF-IDF, calcule leur similarité cosinus et retient les passages les plus pertinents.
+2. **Génération** : `app/api/chat/route.ts` construit le contexte puis appelle un modèle Llama via l’API Groq.
+
+L’interface `components/ChatBubble.tsx` gère les suggestions, l’état de chargement et les erreurs. Dans la version publique actuelle, le chat explique le fonctionnement de la plateforme et guide l’utilisateur ; il ne modifie pas le panier et ne déclenche pas lui-même une réservation.
+
+---
+
+## Architecture applicative et choix d’implémentation
+
+### Authentification et autorisation
+
+**Objectif technique :** mettre en place un flux login/logout complet avec protection des routes privées.
+
+**Implémentation :**
 
 - **Login** (`app/auth/actions.ts` → fonction `login()`) : appel à `supabase.auth.signInWithPassword()` avec email + mot de passe. En cas d'erreur Supabase, redirection vers `/login?error=...` pour afficher le message. En cas de succès, `revalidatePath('/', 'layout')` force le re-rendu du Header (qui affiche "Déconnexion" à la place de "Mon compte").
 
@@ -72,11 +90,11 @@ Les documents de soutenance sont à la racine du dépôt :
 
 ---
 
-### TD3 — Routing + CRUD
+### Navigation, données et opérations CRUD
 
-**Concept du cours :** navigation applicative structurée et opérations CRUD complètes sur les entités métier.
+**Objectif technique :** navigation applicative structurée et opérations CRUD complètes sur les entités métier.
 
-**Implémentation dans le projet :**
+**Implémentation :**
 
 - **Routing** (Next.js App Router) : organisation en segments dynamiques.
   - `/` → accueil avec films de la semaine
@@ -105,11 +123,11 @@ Les documents de soutenance sont à la racine du dépôt :
 
 ---
 
-### TD4 — Couche UI
+### Interface utilisateur
 
-**Concept du cours :** structurer et clarifier l'interface sans casser la logique métier — séparation composants/pages.
+**Objectif technique :** structurer et clarifier l'interface sans casser la logique métier — séparation composants/pages.
 
-**Implémentation dans le projet :**
+**Implémentation :**
 
 - **Composants réutilisables** (`components/`) : chaque élément d'interface est isolé dans son propre composant avec une responsabilité unique.
   - `Header` : navigation principale, conditionnel selon le rôle (admin voit le lien Dashboard).
@@ -127,11 +145,11 @@ Les documents de soutenance sont à la racine du dépôt :
 
 ---
 
-### TD5 — Version finale
+### Assemblage de l’application
 
-**Concept du cours :** centraliser l'authentification, injecter automatiquement le token JWT dans les requêtes API, stabiliser et optimiser.
+**Objectif technique :** centraliser l'authentification, injecter automatiquement le token JWT dans les requêtes API, stabiliser et optimiser.
 
-**Implémentation dans le projet :**
+**Implémentation :**
 
 > **Note :** le cours cible Redux Toolkit comme solution de gestion d'état centralisée. Ce projet adopte une approche plus moderne et adaptée au SSR : les Server Components et Server Actions de Next.js 15 remplacent Redux pour la gestion de l'état global, avec des avantages équivalents (pas de prop drilling, état centralisé côté serveur).
 
@@ -242,9 +260,11 @@ app/
   dashboard/                  — Back-office admin complet
     films/ seances/ salles/ snacks/ reservations/ utilisateurs/
   api/films/[id]/             — Route API pour upload d'affiche (multipart)
+  api/chat/                   — Retrieval local + génération Groq
 
 components/
   Header.tsx                  — Navigation principale (conditionnel selon rôle)
+  ChatBubble.tsx              — Interface du chatbot RAG
   Stepper.tsx                 — Barre de progression du tunnel (6 étapes)
   HeroCarousel.tsx            — Carousel immersif page d'accueil
   FilmsGrid.tsx               — Grille films avec recherche instantanée
@@ -264,6 +284,8 @@ lib/
   supabase/server.ts          — createClient() + createAdminClient()
   supabase/client.ts          — createBrowserClient() pour 'use client'
   booking.ts                  — Draft cookie (getDraft/setDraft/clearDraft)
+  rag.ts                      — Vectorisation TF-IDF, similarité cosinus et retrieval
+  knowledge.ts                — Base de connaissances de l’assistant
   seatmap.ts                  — Génération plan de salle + formatage dates
   types.ts                    — Types TypeScript (Film, Screening, Snack…)
 
